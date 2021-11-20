@@ -1,34 +1,48 @@
 package repicas.replica1;
 
-import common.Setting;
+import packet.Packet;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Server {
-    public static void main(String[] args) {
+public class Server implements Runnable {
 
-        AdminService adminService = new AdminService();
-        adminService.campusCode = "DVL";
+    private int replicaSequenceNumber;
+    final public CopyOnWriteArrayList<Packet> tasks;
 
-        try {
-            MulticastSocket socket = new MulticastSocket(Setting.REPLICA_MULTICAST_PORT);
-            InetAddress group = InetAddress.getByName(Setting.REPLICA_MULTICAST_IP);
-            byte[] buff = new byte[1024];
-            socket.joinGroup(group);
-            while (true) {
-                DatagramPacket packet = new DatagramPacket(buff, buff.length);
-                socket.receive(packet);
-                String data = new String(packet.getData(), 0, packet.getLength());
-                String ip = packet.getAddress().getHostAddress();
-                System.out.println("ip:" + ip + " says: " + data);
+    public Server() {
+        replicaSequenceNumber = 0;
+        tasks = new CopyOnWriteArrayList<>();
+    }
 
-                // TODO: handle the message
+    @Override
+    public void run() {
+        // Initialized Admin and Student Service
+        AdminService adminServiceDVL = new AdminService();
+        adminServiceDVL.campusCode = "DVL";
+        AdminService adminServiceKKL = new AdminService();
+        adminServiceKKL.campusCode = "KKL";
+        AdminService adminServiceWST = new AdminService();
+        adminServiceWST.campusCode = "WST";
+
+        StudentService studentServiceDVL = new StudentService();
+        studentServiceDVL.campusCode = "DVL";
+        StudentService studentServiceKKL = new StudentService();
+        studentServiceKKL.campusCode = "KKL";
+        StudentService studentServiceWST = new StudentService();
+        studentServiceWST.campusCode = "WST";
+
+        while (true) {
+
+            for (Packet task : tasks) {
+                if (task.getSequenceNumber() == replicaSequenceNumber) {
+                    // handle task
+                    System.out.println(task);
+                    // done!
+                    tasks.remove(task);
+                    replicaSequenceNumber++;
+                }
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed");
         }
+
     }
 }
