@@ -1,6 +1,6 @@
 package packet.parameter;
 
-public class ChangeReservationParameter {
+public class ChangeReservationParameter extends OperationParameter{
     String bookingID;
     String newCampusName;
     String newRoomNo;
