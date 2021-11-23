@@ -35,7 +35,6 @@ public class Server implements Runnable {
 
             for (Packet task : tasks) {
                 if (task.getSequenceNumber() == replicaSequenceNumber) {
-                    System.out.println("Start to handle it!");
                     // handle task
                     String result = "";
                     switch (task.getCampus()) {

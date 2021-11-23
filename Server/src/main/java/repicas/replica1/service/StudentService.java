@@ -61,22 +61,18 @@ public class StudentService extends Thread {
     public String getAvailableTimeSlot(String date) {
         String localResult = String.valueOf(roomManager.getAvailableTimeSlot(date));
         String DVL_Result = "", WST_Result = "", KKL_Result = "";
-        System.out.println(campusCode);
         switch (campusCode) {
             case "DVL":
-                System.out.println(1);
                 KKL_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.KKL_HOSTNAME, Setting.KKL_UDP_SERVER_PORT);
                 WST_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.WST_HOSTNAME, Setting.WST_UDP_SERVER_PORT);
                 DVL_Result = localResult;
                 break;
             case "KKL":
-                System.out.println(2);
                 DVL_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.DVL_HOSTNAME, Setting.DVL_UDP_SERVER_PORT);
                 WST_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.WST_HOSTNAME, Setting.WST_UDP_SERVER_PORT);
                 KKL_Result = localResult;
                 break;
             case "WST":
-                System.out.println(3);
                 DVL_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.DVL_HOSTNAME, Setting.DVL_UDP_SERVER_PORT);
                 KKL_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.KKL_HOSTNAME, Setting.KKL_UDP_SERVER_PORT);
                 WST_Result = localResult;
