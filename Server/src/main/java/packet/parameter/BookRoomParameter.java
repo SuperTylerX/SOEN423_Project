@@ -2,11 +2,11 @@ package packet.parameter;
 
 public class BookRoomParameter extends OperationParameter {
 
-    String campusName;
-    String roomNumber;
-    String date;
-    String timeSlot;
-    String studentID;
+    public String campusName;
+    public String roomNumber;
+    public String date;
+    public String timeSlot;
+    public String studentID;
 
     public BookRoomParameter(String campusName, String roomNumber, String date, String timeSlot, String studentID) {
         this.campusName = campusName;

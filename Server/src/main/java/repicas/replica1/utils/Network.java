@@ -1,4 +1,4 @@
-package repicas.replica1;
+package repicas.replica1.utils;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

@@ -27,7 +27,6 @@ public class ReplicaOne {
                 System.out.println("ip:" + ip + " says: " + sp);
                 //TODO: Reply ACK
 
-
                 replicaRunnable.tasks.add(sp);
             }
         } catch (IOException e) {

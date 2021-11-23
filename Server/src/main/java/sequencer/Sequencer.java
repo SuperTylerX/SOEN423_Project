@@ -3,6 +3,7 @@ package sequencer;
 import common.Setting;
 import packet.Packet;
 import packet.parameter.CreateRoomParameter;
+import packet.parameter.GetAvailableTimeSlotParameter;
 import packet.parameter.Operation;
 import packet.parameter.OperationParameter;
 import utils.SerializedObjectConverter;
@@ -25,8 +26,10 @@ public class Sequencer {
 
             // Mock some requests
 
-            OperationParameter op = new CreateRoomParameter("101", "2021-01-21", "7:00-9:00", "DVLA1000");
-            Packet sp = new Packet(0, Operation.CREATE_ROOM, op, "DVL");
+//            OperationParameter op = new CreateRoomParameter("102", "2021-01-21", "7:00-9:00", "KKLA1000");
+//            Packet sp = new Packet(1, Operation.CREATE_ROOM, op, "KKL");
+            OperationParameter op = new GetAvailableTimeSlotParameter("2021-01-21");
+            Packet sp = new Packet(0, Operation.GET_AVAILABLE_TIME_SLOT, op, "DVL");
 
             byte[] buff = SerializedObjectConverter.toByteArray(sp);
             DatagramPacket packet = new DatagramPacket(buff, buff.length, group, Setting.REPLICA_MULTICAST_PORT);

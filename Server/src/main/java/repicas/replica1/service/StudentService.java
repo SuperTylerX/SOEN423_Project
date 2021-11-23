@@ -1,12 +1,48 @@
-package repicas.replica1;
+package repicas.replica1.service;
+
+import repicas.replica1.utils.Log;
+import repicas.replica1.utils.Network;
+import repicas.replica1.Setting;
+import repicas.replica1.model.BookingRecord;
+import repicas.replica1.roommanager.RoomManager;
+import repicas.replica1.roommanager.RoomManagerDVL;
+import repicas.replica1.roommanager.RoomManagerKKL;
+import repicas.replica1.roommanager.RoomManagerWST;
+import repicas.replica1.udpserver.UDPServerDVL;
+import repicas.replica1.udpserver.UDPServerKKL;
+import repicas.replica1.udpserver.UDPServerWST;
 
 import java.util.Date;
 
-public class StudentService {
+public class StudentService extends Thread {
 
-    public RoomManager roomManager = RoomManager.getInstance();
-    public String campusCode;
+    public RoomManager roomManager;
+    public final String campusCode;
 
+    public StudentService(String campusCode, int port) {
+        this.campusCode = campusCode;
+        switch (campusCode) {
+            case "DVL":
+                roomManager = RoomManagerDVL.getInstance();
+                new Thread(() -> {
+                    new UDPServerDVL(port);
+                }).start();
+                break;
+            case "KKL":
+                roomManager = RoomManagerKKL.getInstance();
+                new Thread(() -> {
+                    new UDPServerKKL(port);
+                }).start();
+                break;
+            case "WST":
+                roomManager = RoomManagerWST.getInstance();
+                new Thread(() -> {
+                    new UDPServerWST(port);
+                }).start();
+                break;
+        }
+
+    }
 
     public String bookRoom(String campusName, String roomNumber, String date, String timeSlot, String studentID) {
         String result = "";
@@ -25,19 +61,22 @@ public class StudentService {
     public String getAvailableTimeSlot(String date) {
         String localResult = String.valueOf(roomManager.getAvailableTimeSlot(date));
         String DVL_Result = "", WST_Result = "", KKL_Result = "";
-
+        System.out.println(campusCode);
         switch (campusCode) {
             case "DVL":
+                System.out.println(1);
                 KKL_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.KKL_HOSTNAME, Setting.KKL_UDP_SERVER_PORT);
                 WST_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.WST_HOSTNAME, Setting.WST_UDP_SERVER_PORT);
                 DVL_Result = localResult;
                 break;
             case "KKL":
+                System.out.println(2);
                 DVL_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.DVL_HOSTNAME, Setting.DVL_UDP_SERVER_PORT);
                 WST_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.WST_HOSTNAME, Setting.WST_UDP_SERVER_PORT);
                 KKL_Result = localResult;
                 break;
             case "WST":
+                System.out.println(3);
                 DVL_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.DVL_HOSTNAME, Setting.DVL_UDP_SERVER_PORT);
                 KKL_Result = Network.sendUDP("getAvailableTimeSlot\r\n" + date + "\r\n", Setting.KKL_HOSTNAME, Setting.KKL_UDP_SERVER_PORT);
                 WST_Result = localResult;

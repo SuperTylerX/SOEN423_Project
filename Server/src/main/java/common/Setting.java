@@ -8,8 +8,8 @@ public class Setting {
     public static String FRONTEND_IP = "132.205.95.101";
     public static String FRONTEND_PORT = "8800";
 
-    public static String SEQUENCER_IP = "";
-    public static String SEQUENCER_PORT = "";
+    public static String SEQUENCER_IP = "127.0.0.1";
+    public static String SEQUENCER_PORT = "8801";
 
     public static String REPLICA1_IP = "";
     public static String REPLICA1_PORT = "";

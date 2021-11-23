@@ -1,5 +1,7 @@
-package repicas.replica1;
+package repicas.replica1.udpserver;
 
+
+import repicas.replica1.roommanager.RoomManagerDVL;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -9,8 +11,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
 
-public class UDPServer {
-    public UDPServer(int PORT) {
+public class UDPServerDVL {
+    public UDPServerDVL(int PORT) {
         DatagramSocket aSocket = null;
         try {
             aSocket = new DatagramSocket(PORT);
@@ -25,14 +27,14 @@ public class UDPServer {
                 switch (method) {
                     case "getAvailableTimeSlot":
                         String param = br.readLine();
-                        result = String.valueOf(RoomManager.getInstance().getAvailableTimeSlot(param));
+                        result = String.valueOf(RoomManagerDVL.getInstance().getAvailableTimeSlot(param));
                         break;
                     case "bookRoomRemote": {
                         String roomNumber = br.readLine();
                         String date = br.readLine();
                         String timeSlot = br.readLine();
                         String studentID = br.readLine();
-                        result = RoomManager.getInstance().addRoomRecord(date, roomNumber, timeSlot, studentID);
+                        result = RoomManagerDVL.getInstance().addRoomRecord(date, roomNumber, timeSlot, studentID);
                         break;
                     }
                     case "removeBookingRemote": {
@@ -40,7 +42,7 @@ public class UDPServer {
                         String date = br.readLine();
                         String timeSlot = br.readLine();
                         String studentID = br.readLine();
-                        result = RoomManager.getInstance().removeRoomRecord(date, roomNumber, timeSlot, studentID);
+                        result = RoomManagerDVL.getInstance().removeRoomRecord(date, roomNumber, timeSlot, studentID);
                         break;
                     }
                 }
