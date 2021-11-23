@@ -1,4 +1,8 @@
-package repicas.replica1;
+package repicas.replica1.roommanager;
+
+import repicas.replica1.model.BookingRecord;
+import repicas.replica1.utils.Network;
+import repicas.replica1.Setting;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -6,7 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RoomManager {
+public class RoomManagerWST implements RoomManager {
 
     // Room Record data structure is a hashmap which looks like
     // ( Date => ( RoomNumber => ( TimeSlot => BookedBy )) )
@@ -14,14 +18,14 @@ public class RoomManager {
 
     private final ArrayList<BookingRecord> bookingTable = new ArrayList<>();
 
-    private static RoomManager roomManager;
+    public static RoomManagerWST roomManager;
 
-    private RoomManager() {
+    private RoomManagerWST() {
     }
 
-    public static RoomManager getInstance() {
+    public static RoomManagerWST getInstance() {
         if (roomManager == null) {
-            roomManager = new RoomManager();
+            roomManager = new RoomManagerWST();
         }
         return roomManager;
     }

@@ -1,17 +1,32 @@
-package repicas.replica1;
+package repicas.replica1.service;
+
+import repicas.replica1.utils.Log;
+import repicas.replica1.roommanager.*;
 
 import java.util.Date;
 
 
-public class AdminService {
+public class AdminService extends Thread {
 
-    RoomManager roomManager = RoomManager.getInstance();
-    public String campusCode;
+    RoomManager roomManager;
+    private final String campusCode;
 
+    public AdminService(String campusCode) {
+        this.campusCode = campusCode;
+        switch (campusCode) {
+            case "DVL":
+                roomManager = RoomManagerDVL.getInstance();
+                break;
+            case "KKL":
+                roomManager = RoomManagerKKL.getInstance();
+                break;
+            case "WST":
+                roomManager = RoomManagerWST.getInstance();
+                break;
+        }
+    }
 
     public String createRoom(String roomNumber, String date, String timeSlot, String userID) {
-
-        System.out.println(roomNumber + ", " + date);
         String result;
         if (userID.charAt(3) != 'A') {
             result = "Permission Denied!";

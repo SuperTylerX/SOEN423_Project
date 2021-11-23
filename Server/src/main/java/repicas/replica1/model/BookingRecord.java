@@ -1,4 +1,4 @@
-package repicas.replica1;
+package repicas.replica1.model;
 
 import java.util.Date;
 import java.util.Random;
