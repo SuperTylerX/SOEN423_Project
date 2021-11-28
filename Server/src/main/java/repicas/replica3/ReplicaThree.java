@@ -1,4 +1,4 @@
-package repicas.replica1;
+package repicas.replica3;
 
 import common.Setting;
 import packet.Packet;
@@ -11,7 +11,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.HashMap;
 
-public class ReplicaOne {
+public class ReplicaThree {
     public static void main(String[] args) {
 
         Server replicaRunnable = new Server();
@@ -35,6 +35,7 @@ public class ReplicaOne {
                 //Reply ACK
                 replyACK(sp.getSequenceNumber());
 
+
                 replicaRunnable.tasks.add(sp);
             }
         } catch (IOException e) {
@@ -44,7 +45,7 @@ public class ReplicaOne {
 
     public static void replyACK(int sequencerNumber) {
         HashMap<String, Integer> p = new HashMap<>();
-        p.put("ReplicaName", 1);
+        p.put("ReplicaName", 3);
         p.put("SequencerNumber", sequencerNumber);
         byte[] buf = SerializedObjectConverter.toByteArray(p);
         try {

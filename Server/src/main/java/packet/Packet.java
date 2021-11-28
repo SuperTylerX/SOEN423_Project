@@ -4,6 +4,7 @@ import packet.parameter.Operation;
 import packet.parameter.OperationParameter;
 
 import java.io.Serializable;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Packet implements Serializable {
 
@@ -14,6 +15,7 @@ public class Packet implements Serializable {
     private Operation operation;
     private OperationParameter operationParameter;
     private String campus;
+    public CopyOnWriteArrayList<Integer> ACKs = new CopyOnWriteArrayList<>();
 
     public Packet() {
     }
