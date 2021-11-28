@@ -36,6 +36,14 @@ public class Packet implements Serializable {
         this.campus = campus;
     }
 
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
     public int getSequenceNumber() {
         return sequenceNumber;
     }

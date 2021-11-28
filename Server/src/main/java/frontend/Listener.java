@@ -11,6 +11,8 @@ import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Listener extends Thread {
     public void run() {
@@ -32,6 +34,17 @@ public class Listener extends Thread {
 
                 String response = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
                 System.out.println("FE Listener response " + response);
+
+                ConcurrentHashMap<String, String> res = new ConcurrentHashMap<>();
+                String identifier = res.get("Identifier");
+
+                if (!ResponseWaitingList.responseMap.containsKey(identifier)){
+                    ResponseWaitingList.responseMap.put(identifier, new CopyOnWriteArrayList<>());
+                }
+
+                ResponseWaitingList.responseMap.get(identifier).add(res);
+
+                // response.request_id
             }
 //            socket.close();
         } catch (IOException e) {

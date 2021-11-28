@@ -8,6 +8,6 @@ public class AdminClient {
         AdminServiceImplService adminServiceImplService = new AdminServiceImplService();
         AdminService adminService = adminServiceImplService.getAdminServicePort();
 
-        adminService.createRoom("101","2021-11-27","9:00-10:00", "DVLA1000");
+        adminService.createRoom("101","2021-11-27","9:00-10:00", "DVLA1000"); // attach a requestID
     }
 }

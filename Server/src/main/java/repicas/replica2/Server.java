@@ -4,11 +4,13 @@ import packet.Packet;
 import packet.parameter.*;
 import repicas.replica2.service.AdminService;
 import repicas.replica2.service.StudentService;
+import utils.SerializedObjectConverter;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server implements Runnable {
@@ -56,8 +58,13 @@ public class Server implements Runnable {
                     System.out.println(result);
 
                     result = "success";
+                    ConcurrentHashMap<String, String> hm = new ConcurrentHashMap<>();
 
-                    byte[] buff = result.getBytes(StandardCharsets.UTF_8);
+                    hm.put("Identifier", task.getIdentifier());
+                    hm.put("ReplicaName", "R2");
+                    hm.put("Result", result);
+
+                    byte[] buff = SerializedObjectConverter.toByteArray(hm);
 
                     try {
                         InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP);
