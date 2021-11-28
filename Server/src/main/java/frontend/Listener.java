@@ -28,7 +28,7 @@ public class Listener extends Thread {
                 byte[] buf = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
-                System.out.println("REACHED 3");
+                System.out.println("packet address " + packet.getAddress().getHostAddress());
 
                 String response = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
                 System.out.println("FE Listener response " + response);

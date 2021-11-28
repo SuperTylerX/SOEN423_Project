@@ -58,7 +58,6 @@ public class Server implements Runnable {
                     byte[] buff = result.getBytes(StandardCharsets.UTF_8);
 
                     try {
-                        System.out.println("REACHED");
                         InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP);
                         DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, common.Setting.FRONTEND_PORT);
                         DatagramSocket socket = new DatagramSocket();
