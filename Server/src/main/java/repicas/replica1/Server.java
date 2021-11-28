@@ -5,6 +5,10 @@ import packet.parameter.*;
 import repicas.replica1.service.AdminService;
 import repicas.replica1.service.StudentService;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server implements Runnable {
@@ -50,8 +54,20 @@ public class Server implements Runnable {
                     }
 
                     System.out.println(result);
-                    // done!
-                    // TODO: Send the result to Frontend
+                    result = "success";
+
+                    byte[] buff = result.getBytes(StandardCharsets.UTF_8);
+
+                    try {
+                        InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP);
+                        DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, common.Setting.FRONTEND_PORT);
+                        DatagramSocket socket = new DatagramSocket();
+                        socket.send(dataGramPacket);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
                     tasks.remove(task);
                     replicaSequenceNumber++;
                 }

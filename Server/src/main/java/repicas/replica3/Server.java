@@ -53,6 +53,8 @@ public class Server implements Runnable {
                             break;
                     }
 
+                    result = "BAD";
+
                     System.out.println(result);
 
                     byte[] buff = result.getBytes(StandardCharsets.UTF_8);

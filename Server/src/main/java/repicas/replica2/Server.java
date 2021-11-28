@@ -54,6 +54,9 @@ public class Server implements Runnable {
                     }
 
                     System.out.println(result);
+
+                    result = "success";
+
                     byte[] buff = result.getBytes(StandardCharsets.UTF_8);
 
                     try {
