@@ -26,8 +26,6 @@ public class AdminServiceImpl implements AdminService {
         byte[] buff = SerializedObjectConverter.toByteArray(request);
 
         try {
-            System.out.println("REACDHED HERE ADMINSERVICE CREATEROOM()");
-
             InetAddress address = InetAddress.getByName(Setting.SEQUENCER_IP);
             DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, Setting.SEQUENCER_PORT);
             DatagramSocket socket = new DatagramSocket();
