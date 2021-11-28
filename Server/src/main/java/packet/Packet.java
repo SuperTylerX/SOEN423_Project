@@ -40,6 +40,10 @@ public class Packet implements Serializable {
         return sequenceNumber;
     }
 
+    public void setSequenceNumber(int sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
+    }
+
     public Operation getOperation() {
         return operation;
     }
