@@ -24,7 +24,6 @@ public class ReplicaThree {
         new Thread(() -> {
             while (true) {
                 try {
-
                     Thread.sleep(1);
                 } catch (Exception e) {
 

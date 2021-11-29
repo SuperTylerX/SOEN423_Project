@@ -37,6 +37,8 @@ public class Server implements Runnable {
 
     public void shutdown() {
         studentServiceDVL.shutdown();
+        studentServiceKKL.shutdown();
+        studentServiceWST.shutdown();
     }
 
     @Override

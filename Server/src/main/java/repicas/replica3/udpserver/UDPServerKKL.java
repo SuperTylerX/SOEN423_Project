@@ -20,6 +20,7 @@ public class UDPServerKKL extends Thread implements UDPServer{
     }
 
     public void run() {
+        System.out.println("UDP is running...");
         try {
             try {
                 Thread.sleep(50);
