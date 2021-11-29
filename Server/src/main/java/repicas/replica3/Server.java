@@ -10,16 +10,25 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server implements Runnable {
 
     private int replicaSequenceNumber;
     final public CopyOnWriteArrayList<Packet> tasks;
+    Boolean faulty = false;
 
     public Server() {
         replicaSequenceNumber = 0;
         tasks = new CopyOnWriteArrayList<>();
+        new Thread(() -> {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("input 'crash' to crash R3 for testing");
+            if (sc.nextLine().equals("crash")) {
+                faulty = true;
+            }
+        }).start();
     }
 
     @Override
@@ -72,6 +81,9 @@ public class Server implements Runnable {
 
                     try {
                         InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP);
+                        if (faulty) {
+                            address = InetAddress.getByName(common.Setting.FRONTEND_IP + 1); // For testing crash
+                        }
                         DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, common.Setting.FRONTEND_PORT);
                         DatagramSocket socket = new DatagramSocket();
                         socket.send(dataGramPacket);

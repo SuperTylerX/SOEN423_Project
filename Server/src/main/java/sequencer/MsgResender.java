@@ -11,8 +11,8 @@ import java.net.MulticastSocket;
 
 public class MsgResender extends Thread {
 
-    int count = 0;
-    Packet packet;
+    private int count = 0;
+    private final Packet packet;
 
     public MsgResender(Packet p) {
         packet = p;
@@ -22,12 +22,12 @@ public class MsgResender extends Thread {
     public void run() {
         while (true) {
 
+            // Wait 3 seconds(Timeout time = 3s)
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
 
             if (count > 5) {
                 System.out.println("Warning: timeout more than 5 times!");
@@ -35,26 +35,15 @@ public class MsgResender extends Thread {
             }
 
             if (packet.ACKs.contains(1) && packet.ACKs.contains(2) && packet.ACKs.contains(3) && packet.ACKs.contains(4)) {
-                System.out.println("Received All RESPONSES");
-                System.out.println("ALL RESPONSES ARE THE SAME");
-                break;
-
-                // if not the same, identify problematic replica and initiate protocol (start_error_count())
-            }
-
-            if (packet.ACKs.contains(1) && packet.ACKs.contains(2) && packet.ACKs.contains(3)) {
-
-                // identify failed replica
-                System.out.println("received only 3 responses - CRASH FAILURE");
-                System.out.println("trigger its replica manager");
+                System.out.println("Received All ACKs. Close the timer and re-sender");
                 break;
             }
 
+            // ACK timeout, Re-multicast the request to all replicas
             try {
                 MulticastSocket socket = new MulticastSocket();
                 InetAddress group = InetAddress.getByName(Setting.REPLICA_MULTICAST_IP);
                 socket.joinGroup(group);
-                String line = null;
 
                 byte[] buff = SerializedObjectConverter.toByteArray(packet);
                 DatagramPacket packet = new DatagramPacket(buff, buff.length, group, Setting.REPLICA_MULTICAST_PORT);
