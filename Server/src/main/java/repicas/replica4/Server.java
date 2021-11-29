@@ -10,16 +10,25 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server implements Runnable {
 
     private int replicaSequenceNumber;
     final public CopyOnWriteArrayList<Packet> tasks;
+    Boolean faulty = false;
 
     public Server() {
         replicaSequenceNumber = 0;
         tasks = new CopyOnWriteArrayList<>();
+        new Thread(() -> {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("input 'error' to send bad response from R4 for testing");
+            if (sc.nextLine().equals("error")) {
+                faulty = true;
+            }
+        }).start();
     }
 
     @Override
@@ -54,7 +63,10 @@ public class Server implements Runnable {
                             break;
                     }
 
-                    result = "BAD";
+                    if (faulty) {
+                        result = "BAD";
+                    }
+
                     System.out.println(result);
 
                     HashMap<String, String> hm = new HashMap<>();

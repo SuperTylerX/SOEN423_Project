@@ -25,7 +25,7 @@ public class Server implements Runnable {
         tasks = new CopyOnWriteArrayList<>();
         new Thread(() -> {
             Scanner sc = new Scanner(System.in);
-            System.out.println("input crash R3 (for test)");
+            System.out.println("input 'crash' to crash R3 for testing");
             if (sc.nextLine().equals("crash")) {
                 faulty = true;
             }
