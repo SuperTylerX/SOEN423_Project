@@ -9,8 +9,8 @@ import utils.SerializedObjectConverter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -18,10 +18,18 @@ public class Server implements Runnable {
 
     private int replicaSequenceNumber;
     final public CopyOnWriteArrayList<Packet> tasks;
+    Boolean faulty = false;
 
     public Server() {
         replicaSequenceNumber = 0;
         tasks = new CopyOnWriteArrayList<>();
+        new Thread(() -> {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("input crash R3 (for test)");
+            if (sc.nextLine().equals("crash")) {
+                faulty = true;
+            }
+        }).start();
     }
 
     @Override
@@ -56,7 +64,6 @@ public class Server implements Runnable {
                             break;
                     }
 
-                    result = "BAD";
 
                     System.out.println(result);
 
@@ -69,7 +76,12 @@ public class Server implements Runnable {
                     byte[] buff = SerializedObjectConverter.toByteArray(hm);
 
                     try {
-                        InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP + 1);  // TODO: FIX AFTER CRASH TEST
+                        InetAddress address;
+                        if (faulty) {
+                            address = InetAddress.getByName(common.Setting.FRONTEND_IP + 1);  // TODO: FIX AFTER CRASH TEST
+                        } else {
+                            address = InetAddress.getByName(common.Setting.FRONTEND_IP);  // TODO: FIX AFTER CRASH TEST
+                        }
                         DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, common.Setting.FRONTEND_PORT);
                         DatagramSocket socket = new DatagramSocket();
                         socket.send(dataGramPacket);
