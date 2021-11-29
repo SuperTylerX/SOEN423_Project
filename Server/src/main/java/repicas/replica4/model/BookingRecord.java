@@ -1,7 +1,6 @@
 package repicas.replica4.model;
 
-import java.util.Date;
-import java.util.Random;
+import utils.MD5Tool;
 
 public class BookingRecord {
 
@@ -13,24 +12,17 @@ public class BookingRecord {
     public long orderDate;
     public String campusName;
 
-    public BookingRecord(String studentID, String bookingDate, String roomNumber, String timeSlot, String campusName) {
-        this.bookingID = getRandomString(8);
+    public BookingRecord(String studentID, String bookingDate, String roomNumber, String timeSlot, String campusName, long orderDate) {
+        this.bookingID = generateBookingID(studentID, bookingDate, roomNumber, timeSlot, campusName, orderDate);
         this.studentID = studentID;
         this.bookingDate = bookingDate;
         this.roomNumber = roomNumber;
         this.timeSlot = timeSlot;
-        orderDate = new Date().getTime();
+        this.orderDate = orderDate;
         this.campusName = campusName;
     }
 
-    public static String getRandomString(int length) {
-        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            int number = random.nextInt(62);
-            sb.append(str.charAt(number));
-        }
-        return sb.toString();
+    public static String generateBookingID(String studentID, String bookingDate, String roomNumber, String timeSlot, String campusName, long orderDate) {
+        return MD5Tool.getMD5(studentID + bookingDate + roomNumber + timeSlot + campusName + orderDate);
     }
 }

@@ -1,16 +1,16 @@
 package repicas.replica4.service;
 
-import repicas.replica4.Setting;
-import repicas.replica4.model.BookingRecord;
-import repicas.replica4.roommanager.RoomManager;
-import repicas.replica4.roommanager.RoomManagerDVL;
-import repicas.replica4.roommanager.RoomManagerKKL;
-import repicas.replica4.roommanager.RoomManagerWST;
-import repicas.replica4.udpserver.UDPServerDVL;
-import repicas.replica4.udpserver.UDPServerKKL;
-import repicas.replica4.udpserver.UDPServerWST;
-import repicas.replica4.utils.Log;
-import repicas.replica4.utils.Network;
+import repicas.replica1.utils.Log;
+import repicas.replica1.utils.Network;
+import repicas.replica1.Setting;
+import repicas.replica1.model.BookingRecord;
+import repicas.replica1.roommanager.RoomManager;
+import repicas.replica1.roommanager.RoomManagerDVL;
+import repicas.replica1.roommanager.RoomManagerKKL;
+import repicas.replica1.roommanager.RoomManagerWST;
+import repicas.replica1.udpserver.UDPServerDVL;
+import repicas.replica1.udpserver.UDPServerKKL;
+import repicas.replica1.udpserver.UDPServerWST;
 
 import java.util.Date;
 
@@ -44,12 +44,12 @@ public class StudentService extends Thread {
 
     }
 
-    public String bookRoom(String campusName, String roomNumber, String date, String timeSlot, String studentID) {
+    public String bookRoom(String campusName, String roomNumber, String date, String timeSlot, String studentID, long orderDate) {
         String result = "";
         if (campusName.equals(this.campusCode)) {
-            result = roomManager.bookRoomLocal(roomNumber, date, timeSlot, studentID, campusName);
+            result = roomManager.bookRoomLocal(roomNumber, date, timeSlot, studentID, campusName, orderDate);
         } else {
-            result = roomManager.bookRoomRemote(roomNumber, date, timeSlot, studentID, campusName);
+            result = roomManager.bookRoomRemote(roomNumber, date, timeSlot, studentID, campusName, orderDate);
         }
         Log.addLog(campusCode, "Date: " + new Date().toLocaleString());
         Log.addLog(campusCode, "\r\nRequest Type: Book Room");
@@ -99,15 +99,15 @@ public class StudentService extends Thread {
         return result;
     }
 
-    public String changeReservation(String bookingID, String newCampusName, String newRoomNo, String newTimeSlot, String studentID) {
+    public String changeReservation(String bookingID, String newCampusName, String newRoomNo, String newTimeSlot, String studentID, long orderDate) {
         String result = "";
         String date = roomManager.findRecord(bookingID).bookingDate;
         result = cancelBooking(bookingID, studentID);
         if (result.startsWith("Success")) {
             if (newCampusName.equals(campusCode)) {
-                return roomManager.bookRoomLocal(newRoomNo, date, newTimeSlot, studentID, newCampusName);
+                return roomManager.bookRoomLocal(newRoomNo, date, newTimeSlot, studentID, newCampusName, orderDate);
             } else {
-                return roomManager.bookRoomRemote(newRoomNo, date, newTimeSlot, studentID, newCampusName);
+                return roomManager.bookRoomRemote(newRoomNo, date, newTimeSlot, studentID, newCampusName, orderDate);
             }
         } else {
             return result;

@@ -2,16 +2,14 @@ package repicas.replica2;
 
 import packet.Packet;
 import packet.parameter.*;
-import repicas.replica2.service.AdminService;
-import repicas.replica2.service.StudentService;
+import repicas.replica1.service.AdminService;
+import repicas.replica1.service.StudentService;
 import utils.SerializedObjectConverter;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server implements Runnable {
@@ -57,11 +55,14 @@ public class Server implements Runnable {
                     }
 
                     System.out.println(result);
+
                     HashMap<String, String> hm = new HashMap<>();
 
                     hm.put("Identifier", task.getIdentifier());
-                    hm.put("ReplicaName", "R2");
+                    hm.put("ReplicaName", "R1");
                     hm.put("Result", result);
+
+                    System.out.println("hm " + hm);
 
                     byte[] buff = SerializedObjectConverter.toByteArray(hm);
 
@@ -73,7 +74,6 @@ public class Server implements Runnable {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
 
 
                     tasks.remove(task);
@@ -95,7 +95,7 @@ public class Server implements Runnable {
 
         } else if (task.getOperation() == Operation.BOOK_ROOM) {
             BookRoomParameter params = (BookRoomParameter) task.getOperationParameter();
-            return studentService.bookRoom(params.campusName, params.roomNumber, params.date, params.timeSlot, params.studentID);
+            return studentService.bookRoom(params.campusName, params.roomNumber, params.date, params.timeSlot, params.studentID, params.orderDate);
 
         } else if (task.getOperation() == Operation.CANCEL_BOOKING) {
             CancelBookingParameter params = (CancelBookingParameter) task.getOperationParameter();
@@ -107,7 +107,7 @@ public class Server implements Runnable {
 
         } else if (task.getOperation() == Operation.CHANGE_RESERVATION) {
             ChangeReservationParameter params = (ChangeReservationParameter) task.getOperationParameter();
-            return studentService.changeReservation(params.bookingID, params.newCampusName, params.newRoomNo, params.newTimeSlot, params.studentID);
+            return studentService.changeReservation(params.bookingID, params.newCampusName, params.newRoomNo, params.newTimeSlot, params.studentID, params.orderDate);
         } else {
             return null;
         }

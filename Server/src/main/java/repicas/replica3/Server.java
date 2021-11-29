@@ -2,15 +2,15 @@ package repicas.replica3;
 
 import packet.Packet;
 import packet.parameter.*;
-import repicas.replica3.service.AdminService;
-import repicas.replica3.service.StudentService;
+import repicas.replica1.service.AdminService;
+import repicas.replica1.service.StudentService;
 import utils.SerializedObjectConverter;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -18,18 +18,10 @@ public class Server implements Runnable {
 
     private int replicaSequenceNumber;
     final public CopyOnWriteArrayList<Packet> tasks;
-    Boolean faulty = false;
 
     public Server() {
         replicaSequenceNumber = 0;
         tasks = new CopyOnWriteArrayList<>();
-        new Thread(() -> {
-            Scanner sc = new Scanner(System.in);
-            System.out.println("input 'crash' to crash R3 for testing");
-            if (sc.nextLine().equals("crash")) {
-                faulty = true;
-            }
-        }).start();
     }
 
     @Override
@@ -64,30 +56,27 @@ public class Server implements Runnable {
                             break;
                     }
 
-
                     System.out.println(result);
 
                     HashMap<String, String> hm = new HashMap<>();
 
                     hm.put("Identifier", task.getIdentifier());
-                    hm.put("ReplicaName", "R3");
+                    hm.put("ReplicaName", "R1");
                     hm.put("Result", result);
+
+                    System.out.println("hm " + hm);
 
                     byte[] buff = SerializedObjectConverter.toByteArray(hm);
 
                     try {
-                        InetAddress address;
-                        if (faulty) {
-                            address = InetAddress.getByName(common.Setting.FRONTEND_IP + 1);  // TODO: FIX AFTER CRASH TEST
-                        } else {
-                            address = InetAddress.getByName(common.Setting.FRONTEND_IP);  // TODO: FIX AFTER CRASH TEST
-                        }
+                        InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP);
                         DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, common.Setting.FRONTEND_PORT);
                         DatagramSocket socket = new DatagramSocket();
                         socket.send(dataGramPacket);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
 
                     tasks.remove(task);
                     replicaSequenceNumber++;
@@ -108,7 +97,7 @@ public class Server implements Runnable {
 
         } else if (task.getOperation() == Operation.BOOK_ROOM) {
             BookRoomParameter params = (BookRoomParameter) task.getOperationParameter();
-            return studentService.bookRoom(params.campusName, params.roomNumber, params.date, params.timeSlot, params.studentID);
+            return studentService.bookRoom(params.campusName, params.roomNumber, params.date, params.timeSlot, params.studentID, params.orderDate);
 
         } else if (task.getOperation() == Operation.CANCEL_BOOKING) {
             CancelBookingParameter params = (CancelBookingParameter) task.getOperationParameter();
@@ -120,7 +109,7 @@ public class Server implements Runnable {
 
         } else if (task.getOperation() == Operation.CHANGE_RESERVATION) {
             ChangeReservationParameter params = (ChangeReservationParameter) task.getOperationParameter();
-            return studentService.changeReservation(params.bookingID, params.newCampusName, params.newRoomNo, params.newTimeSlot, params.studentID);
+            return studentService.changeReservation(params.bookingID, params.newCampusName, params.newRoomNo, params.newTimeSlot, params.studentID, params.orderDate);
         } else {
             return null;
         }
