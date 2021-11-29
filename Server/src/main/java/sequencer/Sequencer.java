@@ -39,11 +39,12 @@ public class Sequencer {
                 byte[] buf = new byte[1024];
                 DatagramPacket FE_packet = new DatagramPacket(buf, buf.length);
                 FE_socket.receive(FE_packet);
-                System.out.println("RECEIVED SEQUENCER PSVM");
+                System.out.println("Received a packet from FE. Assign Seq Number and Multicast to Replicas...");
 
                 new Thread(() -> {
                     try {
                         Packet request = (Packet) SerializedObjectConverter.toObject(FE_packet.getData());
+                        System.out.println("Received: " + request);
                         int seq = sequence_number.getAndIncrement();
                         request.setSequenceNumber(seq);
 

@@ -16,4 +16,16 @@ public class ChangeReservationParameter extends OperationParameter {
         this.studentID = studentID;
         this.orderDate = orderDate;
     }
+
+    @Override
+    public String toString() {
+        return "ChangeReservationParameter{" +
+                "bookingID='" + bookingID + '\'' +
+                ", newCampusName='" + newCampusName + '\'' +
+                ", newRoomNo='" + newRoomNo + '\'' +
+                ", newTimeSlot='" + newTimeSlot + '\'' +
+                ", studentID='" + studentID + '\'' +
+                ", orderDate=" + orderDate +
+                '}';
+    }
 }

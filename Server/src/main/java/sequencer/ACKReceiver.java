@@ -29,7 +29,7 @@ public class ACKReceiver extends Thread {
 
                 new Thread(() -> {
                     Map<String, Integer> res = (HashMap<String, Integer>) SerializedObjectConverter.toObject(packet.getData());
-                    System.out.println(packet.getAddress() + " says :" + res);
+                    System.out.println("Received ACK from Replica" + packet.getAddress().getHostAddress() + " says :" + res);
                     int ReplicaName = res.get("ReplicaName");
                     int SequencerNumber = res.get("SequencerNumber");
                     Sequencer.deliveryMap.get(SequencerNumber).ACKs.add(ReplicaName);

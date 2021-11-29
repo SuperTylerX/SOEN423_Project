@@ -44,7 +44,8 @@ public class SFT_HA {
             CopyOnWriteArrayList<ConcurrentHashMap<String, String>> responses = ResponseWaitingList.responseMap.get(identifier);
             if (responses == null) continue;
             if (responses.size() == 4) {
-
+                System.out.println("Get 4 responses from replicas");
+                System.out.println("Now do the Byzantine algorithm for 4 replicas");
                 boolean isConsistent = true;
                 for (int i = 1; i < 4; i++) {
                     if (!responses.get(i).get("Result").equals(responses.get(0).get("Result"))) {
@@ -53,14 +54,12 @@ public class SFT_HA {
                     }
                 }
 
-
                 if (isConsistent) {
-                    System.out.println("consistent");
+                    System.out.println("Get 4 consistent responses from replicas");
                     return responses.get(0).get("Result");
                 } else {
 
                     // identify replica that sent the inconsistent result
-
                     for (int i = 0; i < 4; i++) {
                         int count = 0;
                         for (int j = 0; j < 4; j++) {
@@ -69,19 +68,21 @@ public class SFT_HA {
                             }
                         }
                         if (count == 3) {
-                            System.out.println("inconsistent replica response from " + responses.get(i));
+                            System.out.println("Get inconsistent response from replica " + responses.get(i));
                             // TODO: notify manager here
                             // 1 inconsistent response
                             return responses.get((i + 1) % 4).get("Result");
                         }
                     }
-                    System.out.println("not consistent");
+                    System.out.println("We can not identify which one is inconsistent");
+                    return "System is down, please try again later...";
                 }
             }
 
             if (new Date().getTime() - startTimeStamp > 3000) {
                 if (responses.size() == 3) {
-                    System.out.println("ENTERED CRASH PROTOCOL");
+                    System.out.println("Time out... Entered crash protocol");
+                    System.out.println("Get 3 responses. Now identifying which replica is crashed...");
                     ArrayList<String> finding_bad_replica = new ArrayList<>();
                     finding_bad_replica.add("R1");
                     finding_bad_replica.add("R2");
@@ -92,10 +93,12 @@ public class SFT_HA {
                         finding_bad_replica.remove(responses.get(i).get("ReplicaName"));
                     }
 
-                    System.out.println("crashed replica " + finding_bad_replica.get(0));
+                    System.out.println("Crashed replica is " + finding_bad_replica.get(0));
                     // TODO: send this to ReplicaManager
                     // one crashed replica + 3 GOOD RESPONSES
 
+
+                    System.out.println("Now do the Byzantine algorithm for 3 replicas");
                     boolean isConsistent = true;
                     for (int i = 1; i < 3; i++) {
                         if (!responses.get(i).get("Result").equals(responses.get(0).get("Result"))) {
@@ -105,7 +108,7 @@ public class SFT_HA {
                     }
 
                     if (isConsistent) {
-
+                        System.out.println("Get 3 consistent responses from replicas");
                         return responses.get(0).get("Result");
                     } else {
 
@@ -118,16 +121,20 @@ public class SFT_HA {
                                 }
                             }
                             if (count == 2) {
-                                System.out.println("inconsistent replica response from " + responses.get(i));
+                                System.out.println("Get inconsistent response from replica " + responses.get(i));
                                 // TODO: notify manager here
                                 // 1 inconsistent response and 1 crashed replica + 2 GOOD RESPONSES
                                 return responses.get((i + 1) % 3).get("Result");
                             }
+
                         }
+                        System.out.println("We can not identify which one is inconsistent");
+                        return "System is down, please try again later...";
                     }
                 }
 
-                return "debug SFT_HA";
+                System.out.println("We can not identify which one is inconsistent");
+                return "System is down, please try again later...";
 
             }
         }

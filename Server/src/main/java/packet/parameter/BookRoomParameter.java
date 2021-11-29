@@ -17,4 +17,16 @@ public class BookRoomParameter extends OperationParameter {
         this.studentID = studentID;
         this.orderDate = orderDate;
     }
+
+    @Override
+    public String toString() {
+        return "BookRoomParameter{" +
+                "campusName='" + campusName + '\'' +
+                ", roomNumber='" + roomNumber + '\'' +
+                ", date='" + date + '\'' +
+                ", timeSlot='" + timeSlot + '\'' +
+                ", studentID='" + studentID + '\'' +
+                ", orderDate=" + orderDate +
+                '}';
+    }
 }

@@ -13,4 +13,14 @@ public class DeleteRoomParameter extends OperationParameter {
         this.timeSlot = timeSlot;
         this.userID = userID;
     }
+
+    @Override
+    public String toString() {
+        return "DeleteRoomParameter{" +
+                "roomNumber='" + roomNumber + '\'' +
+                ", date='" + date + '\'' +
+                ", timeSlot='" + timeSlot + '\'' +
+                ", userID='" + userID + '\'' +
+                '}';
+    }
 }

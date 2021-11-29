@@ -67,7 +67,7 @@ public class Server implements Runnable {
                             break;
                     }
 
-                    System.out.println(result);
+                    System.out.println("Response: " + result);
 
                     HashMap<String, String> hm = new HashMap<>();
 
@@ -75,7 +75,8 @@ public class Server implements Runnable {
                     hm.put("ReplicaName", "R3");
                     hm.put("Result", result);
 
-                    System.out.println("hm " + hm);
+                    System.out.println("Send HashMap to FE: " + hm);
+                    System.out.println();
 
                     byte[] buff = SerializedObjectConverter.toByteArray(hm);
 
@@ -90,7 +91,6 @@ public class Server implements Runnable {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
 
                     tasks.remove(task);
                     replicaSequenceNumber++;

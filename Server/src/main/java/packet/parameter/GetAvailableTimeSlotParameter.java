@@ -7,4 +7,11 @@ public class GetAvailableTimeSlotParameter extends OperationParameter {
     public GetAvailableTimeSlotParameter(String date) {
         this.date = date;
     }
+
+    @Override
+    public String toString() {
+        return "GetAvailableTimeSlotParameter{" +
+                "date='" + date + '\'' +
+                '}';
+    }
 }
