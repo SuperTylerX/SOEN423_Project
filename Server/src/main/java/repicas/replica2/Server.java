@@ -2,8 +2,8 @@ package repicas.replica2;
 
 import packet.Packet;
 import packet.parameter.*;
-import repicas.replica1.service.AdminService;
-import repicas.replica1.service.StudentService;
+import repicas.replica2.service.AdminService;
+import repicas.replica2.service.StudentService;
 import utils.SerializedObjectConverter;
 
 import java.net.DatagramPacket;
@@ -37,7 +37,11 @@ public class Server implements Runnable {
         studentServiceWST.start();
 
         while (true) {
-
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             for (Packet task : tasks) {
                 if (task.getSequenceNumber() == replicaSequenceNumber) {
                     // handle task
@@ -59,7 +63,7 @@ public class Server implements Runnable {
                     HashMap<String, String> hm = new HashMap<>();
 
                     hm.put("Identifier", task.getIdentifier());
-                    hm.put("ReplicaName", "R1");
+                    hm.put("ReplicaName", "R2");
                     hm.put("Result", result);
 
                     System.out.println("hm " + hm);

@@ -1,16 +1,16 @@
 package repicas.replica4.service;
 
-import repicas.replica1.utils.Log;
-import repicas.replica1.utils.Network;
-import repicas.replica1.Setting;
-import repicas.replica1.model.BookingRecord;
-import repicas.replica1.roommanager.RoomManager;
-import repicas.replica1.roommanager.RoomManagerDVL;
-import repicas.replica1.roommanager.RoomManagerKKL;
-import repicas.replica1.roommanager.RoomManagerWST;
-import repicas.replica1.udpserver.UDPServerDVL;
-import repicas.replica1.udpserver.UDPServerKKL;
-import repicas.replica1.udpserver.UDPServerWST;
+import repicas.replica4.utils.Log;
+import repicas.replica4.utils.Network;
+import repicas.replica4.Setting;
+import repicas.replica4.model.BookingRecord;
+import repicas.replica4.roommanager.RoomManager;
+import repicas.replica4.roommanager.RoomManagerDVL;
+import repicas.replica4.roommanager.RoomManagerKKL;
+import repicas.replica4.roommanager.RoomManagerWST;
+import repicas.replica4.udpserver.UDPServerDVL;
+import repicas.replica4.udpserver.UDPServerKKL;
+import repicas.replica4.udpserver.UDPServerWST;
 
 import java.util.Date;
 

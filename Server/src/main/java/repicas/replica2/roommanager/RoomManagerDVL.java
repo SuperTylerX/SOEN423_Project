@@ -1,8 +1,8 @@
 package repicas.replica2.roommanager;
 
-import repicas.replica1.model.BookingRecord;
-import repicas.replica1.utils.Network;
-import repicas.replica1.Setting;
+import repicas.replica2.model.BookingRecord;
+import repicas.replica2.utils.Network;
+import repicas.replica2.Setting;
 
 import java.util.ArrayList;
 import java.util.Calendar;

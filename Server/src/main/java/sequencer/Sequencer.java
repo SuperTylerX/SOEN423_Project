@@ -26,7 +26,7 @@ public class Sequencer {
             // Run ACKReceiver Thread
             new ACKReceiver().start();
 
-            // TODO: Get the request from FE
+            // Get the request from FE
             DatagramSocket FE_socket = new DatagramSocket(Setting.SEQUENCER_PORT);
 
             while (true) {
@@ -64,14 +64,6 @@ public class Sequencer {
                     }
                 }).start();
             }
-
-//            OperationParameter op = new CreateRoomParameter("102", "2021-01-21", "7:00-9:00", "KKLA1000");
-//            Packet sp = new Packet(1, Operation.CREATE_ROOM, op, "KKL");
-//            OperationParameter op = new DeleteRoomParameter("102", "2021-01-21", "7:00-9:00", "KKLA1000");
-//            Packet sp = new Packet(3, Operation.DELETE_ROOM, op, "KKL");
-//            OperationParameter op = new GetAvailableTimeSlotParameter("2021-01-21");
-//            Packet sp = new Packet(0, Operation.GET_AVAILABLE_TIME_SLOT, op, "DVL");
-
 
         } catch (IOException e) {
             throw new RuntimeException("Failed");

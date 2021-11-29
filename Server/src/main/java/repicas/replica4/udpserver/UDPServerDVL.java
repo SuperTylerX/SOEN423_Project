@@ -15,6 +15,11 @@ public class UDPServerDVL {
     public UDPServerDVL(int PORT) {
         DatagramSocket aSocket = null;
         try {
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             aSocket = new DatagramSocket(PORT);
             byte[] buffer = new byte[1000];
             while (true) {

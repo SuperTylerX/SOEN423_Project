@@ -2,9 +2,6 @@ package repicas.replica1.model;
 
 import utils.MD5Tool;
 
-import java.util.Date;
-import java.util.Random;
-
 public class BookingRecord {
 
     public String bookingID;

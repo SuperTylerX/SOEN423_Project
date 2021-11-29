@@ -2,16 +2,14 @@ package repicas.replica4;
 
 import packet.Packet;
 import packet.parameter.*;
-import repicas.replica1.service.AdminService;
-import repicas.replica1.service.StudentService;
+import repicas.replica4.service.AdminService;
+import repicas.replica4.service.StudentService;
 import utils.SerializedObjectConverter;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server implements Runnable {
@@ -26,6 +24,7 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
+
         // Initialized Admin and Student Service
         AdminService adminServiceDVL = new AdminService("DVL");
         AdminService adminServiceKKL = new AdminService("KKL");
@@ -39,7 +38,11 @@ public class Server implements Runnable {
         studentServiceWST.start();
 
         while (true) {
-
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             for (Packet task : tasks) {
                 if (task.getSequenceNumber() == replicaSequenceNumber) {
                     // handle task
@@ -61,7 +64,7 @@ public class Server implements Runnable {
                     HashMap<String, String> hm = new HashMap<>();
 
                     hm.put("Identifier", task.getIdentifier());
-                    hm.put("ReplicaName", "R1");
+                    hm.put("ReplicaName", "R4");
                     hm.put("Result", result);
 
                     System.out.println("hm " + hm);

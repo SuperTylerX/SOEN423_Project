@@ -18,6 +18,11 @@ public class UDPServerWST {
             aSocket = new DatagramSocket(PORT);
             byte[] buffer = new byte[1000];
             while (true) {
+                try {
+                    Thread.sleep(50);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 aSocket.receive(request);
                 BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(request.getData()), StandardCharsets.UTF_8));

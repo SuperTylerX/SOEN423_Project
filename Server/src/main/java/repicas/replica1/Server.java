@@ -37,7 +37,11 @@ public class Server implements Runnable {
         studentServiceWST.start();
 
         while (true) {
-
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             for (Packet task : tasks) {
                 if (task.getSequenceNumber() == replicaSequenceNumber) {
                     // handle task

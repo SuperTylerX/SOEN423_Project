@@ -1,6 +1,6 @@
 package repicas.replica4.roommanager;
 
-import repicas.replica1.model.BookingRecord;
+import repicas.replica4.model.BookingRecord;
 
 public interface RoomManager {
 
