@@ -55,7 +55,6 @@ public class AdminServiceImpl implements AdminService {
             boolean isConsistent = true;
             for (int i = 1; i < 4; i++) {
                 if (!responses.get(i).get("Result").equals(responses.get(0).get("Result"))) {
-                    responses.get(i).get("ReplicaName");
                     isConsistent = false;
                     break;
                 }
@@ -79,6 +78,7 @@ public class AdminServiceImpl implements AdminService {
                     if (count == 3) {
                         System.out.println("inconsistent replica response from " + responses.get(i));
                         // TODO: notify manager here
+                        // 1 inconsistent response
                         return responses.get((i + 1) % 4).get("Result");
                     }
                 }
@@ -88,31 +88,53 @@ public class AdminServiceImpl implements AdminService {
             }
 
 
-        } else if(responses.size() == 3) {
+        } else if (responses.size() == 3) {
             System.out.println("ENTERED CRASH PROTOCOL");
-
-            ArrayList<ConcurrentHashMap<String, String>> goodReplicas = new ArrayList<>();
-
             ArrayList<String> finding_bad_replica = new ArrayList<>();
             finding_bad_replica.add("R1");
             finding_bad_replica.add("R2");
             finding_bad_replica.add("R3");
             finding_bad_replica.add("R4");
 
-            for (int i = 0; i < 3; i++) {
-                 finding_bad_replica.remove(responses.get(i).get("ReplicaName"));
-                 goodReplicas.add(responses.get(i));
+            for (int i = 0; i < 3; i++) {  // looping to identify crashed replica
+                finding_bad_replica.remove(responses.get(i).get("ReplicaName"));
             }
 
             System.out.println("crashed replica " + finding_bad_replica.get(0));
-            return goodReplicas.get(0).get("Result");
+            // TODO: send this to ReplicaManager
+            // one crashed replica + 3 GOOD RESPONSES
 
-                // identify downed replica
-            // restart(downed_replica)
+            boolean isConsistent = true;
+            for (int i = 1; i < 3; i++) {
+                if (!responses.get(i).get("Result").equals(responses.get(0).get("Result"))) {
+                    isConsistent = false;
+                    break;
+                }
+            }
+
+            if (isConsistent) {
+
+                return responses.get(0).get("Result");
+            } else {
+
+                // identify replica that sent inconsistent result
+                for (int i = 0; i < 3; i++) {
+                    int count = 0;
+                    for (int j = 0; j < 3; j++) {
+                        if (i != j && !responses.get(i).get("Result").equals(responses.get(j).get("Result"))) {
+                            count++;
+                        }
+                    }
+                    if (count == 2) {
+                        System.out.println("inconsistent replica response from " + responses.get(i));
+                        // TODO: notify manager here
+                        // 1 inconsistent response and 1 crashed replica + 2 GOOD RESPONSES
+                        return responses.get((i + 1) % 3).get("Result");
+                    }
+                }
+            }
         }
-
-
-        return "debug";
+        return "debug end of createRoom()";
     }
 
     @Override

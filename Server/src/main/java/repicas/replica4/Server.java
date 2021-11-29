@@ -54,7 +54,7 @@ public class Server implements Runnable {
                             break;
                     }
 
-                    result = "success";
+                    result = "BAD";
                     System.out.println(result);
 
                     HashMap<String, String> hm = new HashMap<>();
