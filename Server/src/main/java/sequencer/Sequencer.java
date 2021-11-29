@@ -13,11 +13,12 @@ import java.net.MulticastSocket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Sequencer {
 
     static Map<Integer, Packet> deliveryMap = new ConcurrentHashMap<>();
-    static int sequence_number = 0;
+    static AtomicInteger sequence_number = new AtomicInteger(0);
 
     public static void main(String[] args) {
         try {
@@ -43,13 +44,14 @@ public class Sequencer {
                 new Thread(() -> {
                     try {
                         Packet request = (Packet) SerializedObjectConverter.toObject(FE_packet.getData());
-                        request.setSequenceNumber(sequence_number);
+                        int seq = sequence_number.getAndIncrement();
+                        request.setSequenceNumber(seq);
 
                         MulticastSocket socket = new MulticastSocket();
                         InetAddress group = InetAddress.getByName(Setting.REPLICA_MULTICAST_IP);
                         socket.joinGroup(group);
 
-                        deliveryMap.put(sequence_number, request);
+                        deliveryMap.put(seq, request);
 
                         byte[] buff = SerializedObjectConverter.toByteArray(request);
                         DatagramPacket packet = new DatagramPacket(buff, buff.length, group, Setting.REPLICA_MULTICAST_PORT);

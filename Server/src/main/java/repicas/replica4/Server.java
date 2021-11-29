@@ -4,7 +4,12 @@ import packet.Packet;
 import packet.parameter.*;
 import repicas.replica4.service.AdminService;
 import repicas.replica4.service.StudentService;
+import utils.SerializedObjectConverter;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server implements Runnable {
@@ -49,9 +54,27 @@ public class Server implements Runnable {
                             break;
                     }
 
+                    result = "success";
                     System.out.println(result);
-                    // done!
-                    // TODO: Send the result to Frontend
+
+                    HashMap<String, String> hm = new HashMap<>();
+
+                    hm.put("Identifier", task.getIdentifier());
+                    hm.put("ReplicaName", "R4");
+                    hm.put("Result", result);
+
+                    byte[] buff = SerializedObjectConverter.toByteArray(hm);
+
+                    try {
+                        InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP);
+                        DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, common.Setting.FRONTEND_PORT);
+                        DatagramSocket socket = new DatagramSocket();
+                        socket.send(dataGramPacket);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
                     tasks.remove(task);
                     replicaSequenceNumber++;
                 }

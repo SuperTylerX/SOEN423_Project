@@ -10,6 +10,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -58,7 +59,7 @@ public class Server implements Runnable {
                     System.out.println(result);
 
                     result = "success";
-                    ConcurrentHashMap<String, String> hm = new ConcurrentHashMap<>();
+                    HashMap<String, String> hm = new HashMap<>();
 
                     hm.put("Identifier", task.getIdentifier());
                     hm.put("ReplicaName", "R2");

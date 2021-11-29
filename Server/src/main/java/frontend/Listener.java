@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static utils.SerializedObjectConverter.toObject;
+
 public class Listener extends Thread {
     public void run() {
         System.out.println("frontend listening");
@@ -32,10 +34,12 @@ public class Listener extends Thread {
                 socket.receive(packet);
                 System.out.println("packet address " + packet.getAddress().getHostAddress());
 
-                String response = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
-                System.out.println("FE Listener response " + response);
+                HashMap<String, String> hm = (HashMap<String,String>) SerializedObjectConverter.toObject(packet.getData());
+                System.out.println("hm: " +hm);
+//                String response = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
+//                System.out.println("FE Listener response " + response);
 
-                ConcurrentHashMap<String, String> res = new ConcurrentHashMap<>();
+                ConcurrentHashMap<String, String> res = new ConcurrentHashMap<>(hm);
                 String identifier = res.get("Identifier");
 
                 if (!ResponseWaitingList.responseMap.containsKey(identifier)){

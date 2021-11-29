@@ -10,6 +10,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -59,7 +60,7 @@ public class Server implements Runnable {
 
                     System.out.println(result);
 
-                    ConcurrentHashMap<String, String> hm = new ConcurrentHashMap<>();
+                    HashMap<String, String> hm = new HashMap<>();
 
                     hm.put("Identifier", task.getIdentifier());
                     hm.put("ReplicaName", "R3");
@@ -68,7 +69,7 @@ public class Server implements Runnable {
                     byte[] buff = SerializedObjectConverter.toByteArray(hm);
 
                     try {
-                        InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP);
+                        InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP + 1);  // TODO: FIX AFTER CRASH TEST
                         DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, common.Setting.FRONTEND_PORT);
                         DatagramSocket socket = new DatagramSocket();
                         socket.send(dataGramPacket);

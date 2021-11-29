@@ -5,7 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ResponseWaitingList {
 
-    public static Integer identifier;
+    public static Integer identifier = 0;
     public static ConcurrentHashMap<String, CopyOnWriteArrayList<ConcurrentHashMap<String, String>>> responseMap = new ConcurrentHashMap<>();
 
 
