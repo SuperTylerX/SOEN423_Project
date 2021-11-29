@@ -11,9 +11,16 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
 
-public class UDPServerDVL {
+public class UDPServerDVL extends Thread implements UDPServer{
+
+    int PORT;
+    DatagramSocket aSocket;
+
     public UDPServerDVL(int PORT) {
-        DatagramSocket aSocket = null;
+        this.PORT = PORT;
+    }
+
+    public void run() {
         try {
             try {
                 Thread.sleep(50);
@@ -60,6 +67,13 @@ public class UDPServerDVL {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
+
+    public void closePort(){
+        this.stop();
+        aSocket.close();
+    }
+
 
 }

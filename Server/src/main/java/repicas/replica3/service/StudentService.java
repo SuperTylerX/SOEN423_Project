@@ -1,5 +1,6 @@
 package repicas.replica3.service;
 
+import repicas.replica3.udpserver.UDPServer;
 import repicas.replica3.utils.Log;
 import repicas.replica3.utils.Network;
 import repicas.replica3.Setting;
@@ -14,31 +15,29 @@ import repicas.replica3.udpserver.UDPServerWST;
 
 import java.util.Date;
 
-public class StudentService extends Thread {
+public class StudentService {
 
     public RoomManager roomManager;
     public final String campusCode;
+    UDPServer udpThread;
 
     public StudentService(String campusCode, int port) {
         this.campusCode = campusCode;
         switch (campusCode) {
             case "DVL":
                 roomManager = RoomManagerDVL.getInstance();
-                new Thread(() -> {
-                    new UDPServerDVL(port);
-                }).start();
+                udpThread = new UDPServerDVL(port);
+                udpThread.start();
                 break;
             case "KKL":
                 roomManager = RoomManagerKKL.getInstance();
-                new Thread(() -> {
-                    new UDPServerKKL(port);
-                }).start();
+                udpThread = new UDPServerKKL(port);
+                udpThread.start();
                 break;
             case "WST":
                 roomManager = RoomManagerWST.getInstance();
-                new Thread(() -> {
-                    new UDPServerWST(port);
-                }).start();
+                udpThread = new UDPServerWST(port);
+                udpThread.start();
                 break;
         }
 
@@ -112,5 +111,9 @@ public class StudentService extends Thread {
         } else {
             return result;
         }
+    }
+
+    public void shutdown() {
+        udpThread.closePort();
     }
 }

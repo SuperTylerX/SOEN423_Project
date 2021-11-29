@@ -11,9 +11,15 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
 
-public class UDPServerWST {
+public class UDPServerWST extends Thread implements UDPServer {
+    int PORT;
+    DatagramSocket aSocket;
+
     public UDPServerWST(int PORT) {
-        DatagramSocket aSocket = null;
+        this.PORT = PORT;
+    }
+
+    public void run() {
         try {
             try {
                 Thread.sleep(50);
@@ -60,6 +66,12 @@ public class UDPServerWST {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public void closePort() {
+        this.stop();
+        aSocket.close();
     }
 
 }

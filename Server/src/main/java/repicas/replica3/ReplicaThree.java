@@ -10,12 +10,32 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class ReplicaThree {
+    static Server replicaRunnable;
+    static Thread replicaThreeThread;
+
     public static void main(String[] args) {
 
-        Server replicaRunnable = new Server();
-        new Thread(replicaRunnable).start();
+        replicaRunnable = new Server();
+        replicaThreeThread = new Thread(replicaRunnable);
+        replicaThreeThread.start();
+        new Thread(() -> {
+            while (true) {
+                try {
+
+                    Thread.sleep(1);
+                } catch (Exception e) {
+
+                }
+                Scanner sc = new Scanner(System.in);
+                if (sc.nextLine().equals("shutdown")) {
+                    shutdown();
+                }
+            }
+
+        }).start();
         try {
             MulticastSocket socket = new MulticastSocket(Setting.REPLICA_MULTICAST_PORT);
             InetAddress group = InetAddress.getByName(Setting.REPLICA_MULTICAST_IP);
@@ -57,4 +77,18 @@ public class ReplicaThree {
             e.printStackTrace();
         }
     }
+
+    public static void shutdown() {
+        System.out.println("Shutdown");
+        replicaRunnable.shutdown();
+        replicaThreeThread.stop();
+
+        replicaRunnable = new Server();
+        replicaThreeThread = new Thread(replicaRunnable);
+        replicaThreeThread.start();
+    }
+
+//    public static void start() {
+//        System.out.println("Start");
+//    }
 }

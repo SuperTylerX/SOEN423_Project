@@ -18,17 +18,25 @@ public class Server implements Runnable {
     private int replicaSequenceNumber;
     final public CopyOnWriteArrayList<Packet> tasks;
     Boolean faulty = false;
+    StudentService studentServiceDVL;
+    StudentService studentServiceKKL;
+    StudentService studentServiceWST;
+
 
     public Server() {
         replicaSequenceNumber = 0;
         tasks = new CopyOnWriteArrayList<>();
-        new Thread(() -> {
-            Scanner sc = new Scanner(System.in);
-            System.out.println("input 'crash' to crash R3 for testing");
-            if (sc.nextLine().equals("crash")) {
-                faulty = true;
-            }
-        }).start();
+//        new Thread(() -> {
+//            Scanner sc = new Scanner(System.in);
+//            System.out.println("input 'crash' to crash R3 for testing");
+//            if (sc.nextLine().equals("crash")) {
+//                faulty = true;
+//            }
+//        }).start();
+    }
+
+    public void shutdown() {
+        studentServiceDVL.shutdown();
     }
 
     @Override
@@ -38,12 +46,9 @@ public class Server implements Runnable {
         AdminService adminServiceKKL = new AdminService("KKL");
         AdminService adminServiceWST = new AdminService("WST");
 
-        StudentService studentServiceDVL = new StudentService("DVL", Setting.DVL_UDP_SERVER_PORT);
-        studentServiceDVL.start();
-        StudentService studentServiceKKL = new StudentService("KKL", Setting.KKL_UDP_SERVER_PORT);
-        studentServiceKKL.start();
-        StudentService studentServiceWST = new StudentService("WST", Setting.WST_UDP_SERVER_PORT);
-        studentServiceWST.start();
+        studentServiceDVL = new StudentService("DVL", Setting.DVL_UDP_SERVER_PORT);
+        studentServiceKKL = new StudentService("KKL", Setting.KKL_UDP_SERVER_PORT);
+        studentServiceWST = new StudentService("WST", Setting.WST_UDP_SERVER_PORT);
 
         while (true) {
             try {
