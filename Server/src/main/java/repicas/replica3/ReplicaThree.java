@@ -21,20 +21,20 @@ public class ReplicaThree {
         replicaRunnable = new Server();
         replicaThreeThread = new Thread(replicaRunnable);
         replicaThreeThread.start();
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(1);
-                } catch (Exception e) {
-
-                }
-                Scanner sc = new Scanner(System.in);
-                if (sc.nextLine().equals("shutdown")) {
-                    shutdown();
-                }
-            }
-
-        }).start();
+//        new Thread(() -> {
+//            while (true) {
+//                try {
+//                    Thread.sleep(1);
+//                } catch (Exception e) {
+//
+//                }
+//                Scanner sc = new Scanner(System.in);
+//                if (sc.nextLine().equals("shutdown")) {
+//                    shutdown();
+//                }
+//            }
+//
+//        }).start();
         try {
             MulticastSocket socket = new MulticastSocket(Setting.REPLICA_MULTICAST_PORT);
             InetAddress group = InetAddress.getByName(Setting.REPLICA_MULTICAST_IP);
@@ -77,7 +77,7 @@ public class ReplicaThree {
         }
     }
 
-    public static void shutdown() {
+    public static void shutdownAndRestart() {
         System.out.println("Shutdown");
         replicaRunnable.shutdown();
         replicaThreeThread.stop();
@@ -87,7 +87,4 @@ public class ReplicaThree {
         replicaThreeThread.start();
     }
 
-//    public static void start() {
-//        System.out.println("Start");
-//    }
 }

@@ -19,14 +19,14 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public String getAvailableTimeSlot(String date) {
         OperationParameter op = new GetAvailableTimeSlotParameter(date);
-        Packet request = new Packet(Operation.GET_AVAILABLE_TIME_SLOT, op, "DVL");  // TODO: ask Tian
+        Packet request = new Packet(Operation.GET_AVAILABLE_TIME_SLOT, op, "DVL");
         return SFT_HA.make_SFT_HA(request);
     }
 
     @Override
     public String cancelBooking(String bookingID, String studentID) {
         OperationParameter op = new CancelBookingParameter(bookingID, studentID);
-        Packet request = new Packet(Operation.CANCEL_BOOKING, op, studentID.substring(0, 3));  // TODO: ask Tian
+        Packet request = new Packet(Operation.CANCEL_BOOKING, op, studentID.substring(0, 3));
         return SFT_HA.make_SFT_HA(request);
     }
 

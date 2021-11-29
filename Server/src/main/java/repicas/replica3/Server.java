@@ -26,13 +26,13 @@ public class Server implements Runnable {
     public Server() {
         replicaSequenceNumber = 0;
         tasks = new CopyOnWriteArrayList<>();
-//        new Thread(() -> {
-//            Scanner sc = new Scanner(System.in);
-//            System.out.println("input 'crash' to crash R3 for testing");
-//            if (sc.nextLine().equals("crash")) {
-//                faulty = true;
-//            }
-//        }).start();
+        new Thread(() -> {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("input 'crash' to crash R3 for testing");
+            if (sc.nextLine().equals("crash")) {
+                faulty = true;
+            }
+        }).start();
     }
 
     public void shutdown() {
