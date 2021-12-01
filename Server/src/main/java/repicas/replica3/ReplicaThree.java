@@ -2,6 +2,7 @@ package repicas.replica3;
 
 import common.Setting;
 import packet.Packet;
+import replicamanger.ReplicaManager;
 import utils.SerializedObjectConverter;
 
 import java.io.IOException;
@@ -9,18 +10,23 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class ReplicaThree {
-    static Server replicaRunnable;
+    public static Server replicaRunnable;
     static Thread replicaThreeThread;
+    static ReplicaManager replicaManager = new ReplicaManager(3);
 
     public static void main(String[] args) {
 
         replicaRunnable = new Server();
         replicaThreeThread = new Thread(replicaRunnable);
         replicaThreeThread.start();
+
+        Thread replicaManagerThread = new Thread(replicaManager);
+        replicaManagerThread.start();
 //        new Thread(() -> {
 //            while (true) {
 //                try {
@@ -56,6 +62,7 @@ public class ReplicaThree {
 
 
                 replicaRunnable.tasks.add(sp);
+                replicaManager.packetsHistory.add(sp);
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed");
@@ -77,7 +84,7 @@ public class ReplicaThree {
         }
     }
 
-    public static void shutdownAndRestart() {
+    public static void shutdownAndRestart(ArrayList<Packet> packets) {
         System.out.println("Shutdown");
         replicaRunnable.shutdown();
         replicaThreeThread.stop();
@@ -85,6 +92,8 @@ public class ReplicaThree {
         replicaRunnable = new Server();
         replicaThreeThread = new Thread(replicaRunnable);
         replicaThreeThread.start();
+
+        replicaRunnable.setPackets(packets);
     }
 
 }

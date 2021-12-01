@@ -9,6 +9,7 @@ import utils.SerializedObjectConverter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -106,6 +107,11 @@ public class Server implements Runnable {
         }
     }
 
+    public void setPackets(ArrayList<Packet> tempPackets){
+        tasks.clear();
+        tasks.addAll(tempPackets);
+        System.out.println("packets have been replaced");
+    }
 
     public String selectService(Packet task, AdminService adminService, StudentService studentService) {
         if (task.getOperation() == Operation.CREATE_ROOM) {

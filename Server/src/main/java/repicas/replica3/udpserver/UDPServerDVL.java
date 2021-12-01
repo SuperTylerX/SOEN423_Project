@@ -66,7 +66,7 @@ public class UDPServerDVL extends Thread implements UDPServer{
                 aSocket.send(reply);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
     }
