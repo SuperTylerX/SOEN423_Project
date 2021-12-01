@@ -9,42 +9,50 @@ import utils.SerializedObjectConverter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server implements Runnable {
 
+    final static private int replicaIndex = 4;
     private int replicaSequenceNumber;
     final public CopyOnWriteArrayList<Packet> tasks;
     Boolean faulty = false;
+    StudentService studentServiceDVL;
+    StudentService studentServiceKKL;
+    StudentService studentServiceWST;
+
 
     public Server() {
         replicaSequenceNumber = 0;
         tasks = new CopyOnWriteArrayList<>();
         new Thread(() -> {
             Scanner sc = new Scanner(System.in);
-            System.out.println("input 'error' to send bad response from R4 for testing");
-            if (sc.nextLine().equals("error")) {
+            System.out.println("input 'crash' to crash R" + replicaIndex + " for testing");
+            if (sc.nextLine().equals("crash")) {
                 faulty = true;
             }
         }).start();
     }
 
+    public void shutdown() {
+        studentServiceDVL.shutdown();
+        studentServiceKKL.shutdown();
+        studentServiceWST.shutdown();
+    }
+
     @Override
     public void run() {
-
         // Initialized Admin and Student Service
         AdminService adminServiceDVL = new AdminService("DVL");
         AdminService adminServiceKKL = new AdminService("KKL");
         AdminService adminServiceWST = new AdminService("WST");
 
-        StudentService studentServiceDVL = new StudentService("DVL", Setting.DVL_UDP_SERVER_PORT);
-        studentServiceDVL.start();
-        StudentService studentServiceKKL = new StudentService("KKL", Setting.KKL_UDP_SERVER_PORT);
-        studentServiceKKL.start();
-        StudentService studentServiceWST = new StudentService("WST", Setting.WST_UDP_SERVER_PORT);
-        studentServiceWST.start();
+        studentServiceDVL = new StudentService("DVL", Setting.DVL_UDP_SERVER_PORT);
+        studentServiceKKL = new StudentService("KKL", Setting.KKL_UDP_SERVER_PORT);
+        studentServiceWST = new StudentService("WST", Setting.WST_UDP_SERVER_PORT);
 
         while (true) {
             try {
@@ -70,14 +78,10 @@ public class Server implements Runnable {
 
                     System.out.println("Response: " + result);
 
-                    if (faulty) {
-                        result = "BAD";
-                    }
-
                     HashMap<String, String> hm = new HashMap<>();
 
                     hm.put("Identifier", task.getIdentifier());
-                    hm.put("ReplicaName", "R4");
+                    hm.put("ReplicaName", "R" + replicaIndex);
                     hm.put("Result", result);
 
                     System.out.println("Send HashMap to FE: " + hm);
@@ -87,6 +91,9 @@ public class Server implements Runnable {
 
                     try {
                         InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP);
+                        if (faulty) {
+                            address = InetAddress.getByName(common.Setting.FRONTEND_IP + 1); // For testing crash
+                        }
                         DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, common.Setting.FRONTEND_PORT);
                         DatagramSocket socket = new DatagramSocket();
                         socket.send(dataGramPacket);
@@ -101,6 +108,11 @@ public class Server implements Runnable {
         }
     }
 
+    public void setPackets(ArrayList<Packet> tempPackets){
+        tasks.clear();
+        tasks.addAll(tempPackets);
+        System.out.println("packets have been replaced");
+    }
 
     public String selectService(Packet task, AdminService adminService, StudentService studentService) {
         if (task.getOperation() == Operation.CREATE_ROOM) {

@@ -1,44 +1,43 @@
 package repicas.replica4.service;
 
-import repicas.replica4.utils.Log;
-import repicas.replica4.utils.Network;
 import repicas.replica4.Setting;
 import repicas.replica4.model.BookingRecord;
 import repicas.replica4.roommanager.RoomManager;
 import repicas.replica4.roommanager.RoomManagerDVL;
 import repicas.replica4.roommanager.RoomManagerKKL;
 import repicas.replica4.roommanager.RoomManagerWST;
+import repicas.replica4.udpserver.UDPServer;
 import repicas.replica4.udpserver.UDPServerDVL;
 import repicas.replica4.udpserver.UDPServerKKL;
 import repicas.replica4.udpserver.UDPServerWST;
+import repicas.replica4.utils.Log;
+import repicas.replica4.utils.Network;
 
 import java.util.Date;
 
-public class StudentService extends Thread {
+public class StudentService {
 
     public RoomManager roomManager;
     public final String campusCode;
+    UDPServer udpThread;
 
     public StudentService(String campusCode, int port) {
         this.campusCode = campusCode;
         switch (campusCode) {
             case "DVL":
                 roomManager = RoomManagerDVL.getInstance();
-                new Thread(() -> {
-                    new UDPServerDVL(port);
-                }).start();
+                udpThread = new UDPServerDVL(port);
+                udpThread.start();
                 break;
             case "KKL":
                 roomManager = RoomManagerKKL.getInstance();
-                new Thread(() -> {
-                    new UDPServerKKL(port);
-                }).start();
+                udpThread = new UDPServerKKL(port);
+                udpThread.start();
                 break;
             case "WST":
                 roomManager = RoomManagerWST.getInstance();
-                new Thread(() -> {
-                    new UDPServerWST(port);
-                }).start();
+                udpThread = new UDPServerWST(port);
+                udpThread.start();
                 break;
         }
 
@@ -112,5 +111,9 @@ public class StudentService extends Thread {
         } else {
             return result;
         }
+    }
+
+    public void shutdown() {
+        udpThread.closePort();
     }
 }

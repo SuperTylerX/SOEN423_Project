@@ -19,15 +19,9 @@ public class ReplicaManagerTest {
     public static void main(String[] args) {
         try{
             OperationParameter op = new GetAvailableTimeSlotParameter("2021-01-21");
-            ArrayList<Packet> packets = new ArrayList<>();
-            packets.add(new Packet(0, Operation.GET_AVAILABLE_TIME_SLOT, op, "DVL"));
-            packets.add(new Packet(2, Operation.GET_AVAILABLE_TIME_SLOT, op, "DVL"));
-            packets.add(new Packet(3, Operation.GET_AVAILABLE_TIME_SLOT, op, "DVL"));
-            packets.add(new Packet(4, Operation.GET_AVAILABLE_TIME_SLOT, op, "DVL"));
-            packets.add(new Packet(5, Operation.GET_AVAILABLE_TIME_SLOT, op, "DVL"));
 
-            String replacePacketsReply = replacePackets(Setting.REPLICA3_IP, Setting.REPLICA3_PORT, packets);
-            System.out.println(replacePacketsReply);
+            //String replacePacketsReply = replacePackets(Setting.REPLICA3_IP, Setting.REPLICA3_PORT, packets);
+            //System.out.println(replacePacketsReply);
 
             // String sendPacketsToReply = sendPacketsTo(Setting.REPLICA1_IP, Setting.REPLICA1_PORT, Setting.REPLICA2_IP, Setting.REPLICA2_PORT);
             //System.out.println(sendPacketsToReply);

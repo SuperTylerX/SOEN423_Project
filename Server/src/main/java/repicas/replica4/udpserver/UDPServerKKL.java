@@ -11,9 +11,16 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
 
-public class UDPServerKKL {
+public class UDPServerKKL extends Thread implements UDPServer {
+    int PORT;
+    DatagramSocket aSocket;
+
     public UDPServerKKL(int PORT) {
-        DatagramSocket aSocket = null;
+        this.PORT = PORT;
+    }
+
+    public void run() {
+        System.out.println("UDP is running...");
         try {
             try {
                 Thread.sleep(50);
@@ -58,8 +65,14 @@ public class UDPServerKKL {
                 aSocket.send(reply);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
+
+    }
+
+    public void closePort(){
+        this.stop();
+        aSocket.close();
     }
 
 }
