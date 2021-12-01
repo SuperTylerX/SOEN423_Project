@@ -66,8 +66,8 @@ public class ReplicaManager implements Runnable {
                     messageHeader = messageHeader.substring(0,s.indexOf(','));
                 }
 
-                if(messageHeader.equals(ReplicaManagerOperations.REPLACE_PACKETS_AND_RESET.name())){
-                    System.out.println("RM: REPLACE_PACKETS_AND_RESET request received");
+                if(messageHeader.equals(ReplicaManagerOperations.REPLACE_PACKETS_AND_REBOOT.name())){
+                    System.out.println("RM: REPLACE_PACKETS_AND_REBOOT request received");
                     String json = s.substring(s.indexOf(",")+1); // remove header
 
                     Type listType = new TypeToken<ArrayList<Packet>>(){}.getType();
@@ -78,17 +78,17 @@ public class ReplicaManager implements Runnable {
                     //reset replica
                     switch(replicaIndex) {
                         case 1:
-                            //ReplicaOne.replicaRunnable.resetServer(tempPackets);
+                            ReplicaOne.shutdownAndRestart(tempPackets);
                             break;
                         case 2:
-                            //ReplicaTwo.replicaRunnable.resetServer(tempPackets);
+                            ReplicaTwo.shutdownAndRestart(tempPackets);
                             break;
                         case 3:
                             ReplicaThree.shutdownAndRestart(tempPackets);
                             //
                             break;
                         case 4:
-                            //ReplicaFour.replicaRunnable.resetServer(tempPackets);
+                            ReplicaFour.shutdownAndRestart(tempPackets);
                             break;
                     }
 
@@ -102,7 +102,7 @@ public class ReplicaManager implements Runnable {
                             packet.getAddress(), packet.getPort());
                     socket.send(reply);
 
-                    System.out.println("RM: REPLACE_PACKETS_AND_RESET Done");
+                    System.out.println("RM: REPLACE_PACKETS_AND_REBOOT Done");
                     continue;
                 }
 
@@ -119,7 +119,7 @@ public class ReplicaManager implements Runnable {
                             packet.getAddress(), packet.getPort());
                     socket.send(DatagramPacketReply);
 
-                    System.out.println("RM: SEND_PACKETS_TO.REPLACE_PACKETS_AND_RESET: " + replacePacketsAnswer);
+                    System.out.println("RM: SEND_PACKETS_TO.REPLACE_PACKETS_AND_REBOOT: " + replacePacketsAnswer);
                     System.out.println("RM: SEND_PACKETS_TO Done");
                 }
 
@@ -133,7 +133,7 @@ public class ReplicaManager implements Runnable {
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(
                 OperationAdapterFactory.operationAdapterFactory).create();
         String json = gson.toJson(packets);
-        String message = ReplicaManagerOperations.REPLACE_PACKETS_AND_RESET.name() + "," + json;
+        String message = ReplicaManagerOperations.REPLACE_PACKETS_AND_REBOOT.name() + "," + json;
 
         DatagramSocket socket;
         InetAddress address = InetAddress.getByName(ip);

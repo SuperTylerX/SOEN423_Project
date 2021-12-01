@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import common.Setting;
 import packet.Packet;
 import packet.parameter.GetAvailableTimeSlotParameter;
-import packet.parameter.Operation;
 import packet.parameter.OperationParameter;
 import utils.SerializedObjectConverter;
 
@@ -26,7 +25,7 @@ public class ReplicaManagerTest {
             // String sendPacketsToReply = sendPacketsTo(Setting.REPLICA1_IP, Setting.REPLICA1_PORT, Setting.REPLICA2_IP, Setting.REPLICA2_PORT);
             //System.out.println(sendPacketsToReply);
 
-            String rebootReply = reboot(2);
+            String rebootReply = reboot(4);
             System.out.println(rebootReply);
 
         }catch (Exception e){
@@ -74,7 +73,7 @@ public class ReplicaManagerTest {
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(
                 OperationAdapterFactory.operationAdapterFactory).create();
         String json = gson.toJson(packets);
-        String message = ReplicaManagerOperations.REPLACE_PACKETS_AND_RESET.name() + "," + json;
+        String message = ReplicaManagerOperations.REPLACE_PACKETS_AND_REBOOT.name() + "," + json;
 
         DatagramSocket socket;
         InetAddress address = InetAddress.getByName(ip);
