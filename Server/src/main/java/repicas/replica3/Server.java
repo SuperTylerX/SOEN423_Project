@@ -16,6 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server implements Runnable {
 
+    final static private int replicaIndex = 3;
     private int replicaSequenceNumber;
     final public CopyOnWriteArrayList<Packet> tasks;
     Boolean faulty = false;
@@ -29,7 +30,7 @@ public class Server implements Runnable {
         tasks = new CopyOnWriteArrayList<>();
         new Thread(() -> {
             Scanner sc = new Scanner(System.in);
-            System.out.println("input 'crash' to crash R3 for testing");
+            System.out.println("input 'crash' to crash R" + replicaIndex + " for testing");
             if (sc.nextLine().equals("crash")) {
                 faulty = true;
             }
@@ -80,7 +81,7 @@ public class Server implements Runnable {
                     HashMap<String, String> hm = new HashMap<>();
 
                     hm.put("Identifier", task.getIdentifier());
-                    hm.put("ReplicaName", "R3");
+                    hm.put("ReplicaName", "R" + replicaIndex);
                     hm.put("Result", result);
 
                     System.out.println("Send HashMap to FE: " + hm);

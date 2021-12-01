@@ -12,18 +12,20 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
+@SuppressWarnings("deprecation")
 public class ReplicaThree {
+
+    final static private int replicaIndex = 3;
     public static Server replicaRunnable;
-    static Thread replicaThreeThread;
-    static ReplicaManager replicaManager = new ReplicaManager(3);
+    static Thread replicaThread;
+    static ReplicaManager replicaManager = new ReplicaManager(replicaIndex);
 
     public static void main(String[] args) {
 
         replicaRunnable = new Server();
-        replicaThreeThread = new Thread(replicaRunnable);
-        replicaThreeThread.start();
+        replicaThread = new Thread(replicaRunnable);
+        replicaThread.start();
 
         Thread replicaManagerThread = new Thread(replicaManager);
         replicaManagerThread.start();
@@ -71,7 +73,7 @@ public class ReplicaThree {
 
     public static void replyACK(int sequencerNumber) {
         HashMap<String, Integer> p = new HashMap<>();
-        p.put("ReplicaName", 3);
+        p.put("ReplicaName", replicaIndex);
         p.put("SequencerNumber", sequencerNumber);
         byte[] buf = SerializedObjectConverter.toByteArray(p);
         try {
@@ -87,11 +89,11 @@ public class ReplicaThree {
     public static void shutdownAndRestart(ArrayList<Packet> packets) {
         System.out.println("Shutdown");
         replicaRunnable.shutdown();
-        replicaThreeThread.stop();
+        replicaThread.stop();
 
         replicaRunnable = new Server();
-        replicaThreeThread = new Thread(replicaRunnable);
-        replicaThreeThread.start();
+        replicaThread = new Thread(replicaRunnable);
+        replicaThread.start();
 
         replicaRunnable.setPackets(packets);
     }
