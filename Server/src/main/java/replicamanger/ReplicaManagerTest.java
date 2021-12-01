@@ -26,7 +26,7 @@ public class ReplicaManagerTest {
             // String sendPacketsToReply = sendPacketsTo(Setting.REPLICA1_IP, Setting.REPLICA1_PORT, Setting.REPLICA2_IP, Setting.REPLICA2_PORT);
             //System.out.println(sendPacketsToReply);
 
-            String rebootReply = reboot(3);
+            String rebootReply = reboot(2);
             System.out.println(rebootReply);
 
         }catch (Exception e){
