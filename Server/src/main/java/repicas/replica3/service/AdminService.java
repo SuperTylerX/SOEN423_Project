@@ -1,10 +1,7 @@
 package repicas.replica3.service;
 
-import repicas.replica3.roommanager.RoomManager;
-import repicas.replica3.roommanager.RoomManagerDVL;
-import repicas.replica3.roommanager.RoomManagerKKL;
-import repicas.replica3.roommanager.RoomManagerWST;
 import repicas.replica3.utils.Log;
+import repicas.replica3.roommanager.*;
 
 import java.util.Date;
 

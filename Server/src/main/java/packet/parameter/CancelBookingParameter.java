@@ -9,4 +9,12 @@ public class CancelBookingParameter extends OperationParameter {
         this.bookingID = bookingID;
         this.studentID = studentID;
     }
+
+    @Override
+    public String toString() {
+        return "CancelBookingParameter{" +
+                "bookingID='" + bookingID + '\'' +
+                ", studentID='" + studentID + '\'' +
+                '}';
+    }
 }

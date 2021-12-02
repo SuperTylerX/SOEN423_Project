@@ -11,8 +11,8 @@ import java.net.MulticastSocket;
 
 public class MsgResender extends Thread {
 
-    int count = 0;
-    Packet packet;
+    private int count = 0;
+    private final Packet packet;
 
     public MsgResender(Packet p) {
         packet = p;
@@ -22,6 +22,7 @@ public class MsgResender extends Thread {
     public void run() {
         while (true) {
 
+            // Wait 3 seconds(Timeout time = 3s)
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -34,14 +35,15 @@ public class MsgResender extends Thread {
             }
 
             if (packet.ACKs.contains(1) && packet.ACKs.contains(2) && packet.ACKs.contains(3) && packet.ACKs.contains(4)) {
-                System.out.println("Received All ACKs");
+                System.out.println("Received All ACKs. Close the timer and re-sender");
                 break;
             }
+
+            // ACK timeout, Re-multicast the request to all replicas
             try {
                 MulticastSocket socket = new MulticastSocket();
                 InetAddress group = InetAddress.getByName(Setting.REPLICA_MULTICAST_IP);
                 socket.joinGroup(group);
-                String line = null;
 
                 byte[] buff = SerializedObjectConverter.toByteArray(packet);
                 DatagramPacket packet = new DatagramPacket(buff, buff.length, group, Setting.REPLICA_MULTICAST_PORT);

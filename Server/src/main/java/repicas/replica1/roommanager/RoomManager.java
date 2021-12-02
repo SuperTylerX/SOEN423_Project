@@ -8,9 +8,9 @@ public interface RoomManager {
 
     public String deleteRoom(String roomNumber, String date, String timeSlot);
 
-    public String bookRoomLocal(String roomNumber, String date, String timeSlot, String studentID, String campusName);
+    public String bookRoomLocal(String roomNumber, String date, String timeSlot, String studentID, String campusName, long orderDate);
 
-    public String bookRoomRemote(String roomNumber, String date, String timeSlot, String studentID, String campusName);
+    public String bookRoomRemote(String roomNumber, String date, String timeSlot, String studentID, String campusName, long orderDate);
 
     public String addRoomRecord(String date, String roomNumber, String timeSlot, String studentID);
 

@@ -1,8 +1,8 @@
 package repicas.replica3.roommanager;
 
-import repicas.replica3.Setting;
 import repicas.replica3.model.BookingRecord;
 import repicas.replica3.utils.Network;
+import repicas.replica3.Setting;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -73,7 +73,7 @@ public class RoomManagerDVL implements RoomManager {
 
     }
 
-    public String bookRoomLocal(String roomNumber, String date, String timeSlot, String studentID, String campusName) {
+    public String bookRoomLocal(String roomNumber, String date, String timeSlot, String studentID, String campusName, long orderDate) {
 
         // Check if the student can book
         if (isExceedReservationLimit(studentID)) {
@@ -89,11 +89,11 @@ public class RoomManagerDVL implements RoomManager {
 
         // 3. Add the student to the record Table
         // return the reservedID
-        return addBookingTable(studentID, date, roomNumber, timeSlot, campusName);
+        return addBookingTable(studentID, date, roomNumber, timeSlot, campusName, orderDate);
 
     }
 
-    public String bookRoomRemote(String roomNumber, String date, String timeSlot, String studentID, String campusName) {
+    public String bookRoomRemote(String roomNumber, String date, String timeSlot, String studentID, String campusName, long orderDate) {
 
         String TargetHost = "";
         int TargetPort = 0;
@@ -133,13 +133,13 @@ public class RoomManagerDVL implements RoomManager {
         }
 
         // 3. Add the student to the record Table
-        return addBookingTable(studentID, date, roomNumber, timeSlot, campusName);
+        return addBookingTable(studentID, date, roomNumber, timeSlot, campusName, orderDate);
 
     }
 
-    private String addBookingTable(String studentID, String date, String roomNumber, String timeSlot, String campusName) {
+    private String addBookingTable(String studentID, String date, String roomNumber, String timeSlot, String campusName, long orderDate) {
         synchronized (bookingTable) {
-            BookingRecord newBookingRecord = new BookingRecord(studentID, date, roomNumber, timeSlot, campusName);
+            BookingRecord newBookingRecord = new BookingRecord(studentID, date, roomNumber, timeSlot, campusName, orderDate);
             bookingTable.add(newBookingRecord);
             return "Success! Your Booking ID is " + newBookingRecord.bookingID;
         }

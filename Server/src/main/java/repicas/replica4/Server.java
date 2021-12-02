@@ -4,17 +4,43 @@ import packet.Packet;
 import packet.parameter.*;
 import repicas.replica4.service.AdminService;
 import repicas.replica4.service.StudentService;
+import utils.SerializedObjectConverter;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server implements Runnable {
 
+    final static private int replicaIndex = 4;
     private int replicaSequenceNumber;
     final public CopyOnWriteArrayList<Packet> tasks;
+    Boolean faulty = false;
+    StudentService studentServiceDVL;
+    StudentService studentServiceKKL;
+    StudentService studentServiceWST;
+
 
     public Server() {
         replicaSequenceNumber = 0;
         tasks = new CopyOnWriteArrayList<>();
+        new Thread(() -> {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("input 'error' to send bad response from R4 for testing");
+            if (sc.nextLine().equals("error")) {
+                faulty = true;
+            }
+        }).start();
+    }
+
+    public void shutdown() {
+        studentServiceDVL.shutdown();
+        studentServiceKKL.shutdown();
+        studentServiceWST.shutdown();
     }
 
     @Override
@@ -24,15 +50,16 @@ public class Server implements Runnable {
         AdminService adminServiceKKL = new AdminService("KKL");
         AdminService adminServiceWST = new AdminService("WST");
 
-        StudentService studentServiceDVL = new StudentService("DVL", Setting.DVL_UDP_SERVER_PORT);
-        studentServiceDVL.start();
-        StudentService studentServiceKKL = new StudentService("KKL", Setting.KKL_UDP_SERVER_PORT);
-        studentServiceKKL.start();
-        StudentService studentServiceWST = new StudentService("WST", Setting.WST_UDP_SERVER_PORT);
-        studentServiceWST.start();
+        studentServiceDVL = new StudentService("DVL", Setting.DVL_UDP_SERVER_PORT);
+        studentServiceKKL = new StudentService("KKL", Setting.KKL_UDP_SERVER_PORT);
+        studentServiceWST = new StudentService("WST", Setting.WST_UDP_SERVER_PORT);
 
         while (true) {
-
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             for (Packet task : tasks) {
                 if (task.getSequenceNumber() == replicaSequenceNumber) {
                     // handle task
@@ -49,9 +76,33 @@ public class Server implements Runnable {
                             break;
                     }
 
-                    System.out.println(result);
-                    // done!
-                    // TODO: Send the result to Frontend
+                    System.out.println("Response: " + result);
+
+
+                    if (faulty) {
+                        result = "BAD";
+                    }
+
+                    HashMap<String, String> hm = new HashMap<>();
+
+                    hm.put("Identifier", task.getIdentifier());
+                    hm.put("ReplicaName", "R" + replicaIndex);
+                    hm.put("Result", result);
+
+                    System.out.println("Send HashMap to FE: " + hm);
+                    System.out.println();
+
+                    byte[] buff = SerializedObjectConverter.toByteArray(hm);
+
+                    try {
+                        InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP);
+                        DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, common.Setting.FRONTEND_PORT);
+                        DatagramSocket socket = new DatagramSocket();
+                        socket.send(dataGramPacket);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     tasks.remove(task);
                     replicaSequenceNumber++;
                 }
@@ -59,6 +110,11 @@ public class Server implements Runnable {
         }
     }
 
+    public void setPackets(ArrayList<Packet> tempPackets) {
+        tasks.clear();
+        tasks.addAll(tempPackets);
+        System.out.println("packets have been replaced");
+    }
 
     public String selectService(Packet task, AdminService adminService, StudentService studentService) {
         if (task.getOperation() == Operation.CREATE_ROOM) {
@@ -71,7 +127,7 @@ public class Server implements Runnable {
 
         } else if (task.getOperation() == Operation.BOOK_ROOM) {
             BookRoomParameter params = (BookRoomParameter) task.getOperationParameter();
-            return studentService.bookRoom(params.campusName, params.roomNumber, params.date, params.timeSlot, params.studentID);
+            return studentService.bookRoom(params.campusName, params.roomNumber, params.date, params.timeSlot, params.studentID, params.orderDate);
 
         } else if (task.getOperation() == Operation.CANCEL_BOOKING) {
             CancelBookingParameter params = (CancelBookingParameter) task.getOperationParameter();
@@ -83,7 +139,7 @@ public class Server implements Runnable {
 
         } else if (task.getOperation() == Operation.CHANGE_RESERVATION) {
             ChangeReservationParameter params = (ChangeReservationParameter) task.getOperationParameter();
-            return studentService.changeReservation(params.bookingID, params.newCampusName, params.newRoomNo, params.newTimeSlot, params.studentID);
+            return studentService.changeReservation(params.bookingID, params.newCampusName, params.newRoomNo, params.newTimeSlot, params.studentID, params.orderDate);
         } else {
             return null;
         }

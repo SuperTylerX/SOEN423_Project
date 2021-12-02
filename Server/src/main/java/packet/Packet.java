@@ -4,6 +4,7 @@ import packet.parameter.Operation;
 import packet.parameter.OperationParameter;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Packet implements Serializable {
@@ -35,8 +36,20 @@ public class Packet implements Serializable {
         this.campus = campus;
     }
 
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
     public int getSequenceNumber() {
         return sequenceNumber;
+    }
+
+    public void setSequenceNumber(int sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
     }
 
     public Operation getOperation() {

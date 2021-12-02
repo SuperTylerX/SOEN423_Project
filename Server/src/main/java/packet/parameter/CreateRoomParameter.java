@@ -13,4 +13,14 @@ public class CreateRoomParameter extends OperationParameter {
         this.timeSlot = timeSlot;
         this.userID = userID;
     }
+
+    @Override
+    public String toString() {
+        return "CreateRoomParameter{" +
+                "roomNumber='" + roomNumber + '\'' +
+                ", date='" + date + '\'' +
+                ", timeSlot='" + timeSlot + '\'' +
+                ", userID='" + userID + '\'' +
+                '}';
+    }
 }
