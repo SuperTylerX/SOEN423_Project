@@ -54,7 +54,7 @@ public class ReplicaManager implements Runnable {
     public void run() {
         try {
             DatagramSocket socket = new DatagramSocket(myPort);
-            byte[] buffer = new byte[1000];
+            byte[] buffer = new byte[10000];
 
             while (true) {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -132,6 +132,7 @@ public class ReplicaManager implements Runnable {
         HashMap<String, Object> req = new HashMap<>();
         req.put("Operation", ReplicaManagerOperations.REPLACE_PACKETS_AND_REBOOT);
         req.put("Packets", packets);
+        System.out.println(req);
         DatagramSocket socket;
         InetAddress address = InetAddress.getByName(ip);
         byte[] buff = SerializedObjectConverter.toByteArray(req);
