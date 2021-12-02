@@ -30,8 +30,8 @@ public class Server implements Runnable {
         tasks = new CopyOnWriteArrayList<>();
         new Thread(() -> {
             Scanner sc = new Scanner(System.in);
-            System.out.println("input 'crash' to crash R" + replicaIndex + " for testing");
-            if (sc.nextLine().equals("crash")) {
+            System.out.println("input 'error' to send bad response from R4 for testing");
+            if (sc.nextLine().equals("error")) {
                 faulty = true;
             }
         }).start();
@@ -78,6 +78,11 @@ public class Server implements Runnable {
 
                     System.out.println("Response: " + result);
 
+
+                    if (faulty) {
+                        result = "BAD";
+                    }
+
                     HashMap<String, String> hm = new HashMap<>();
 
                     hm.put("Identifier", task.getIdentifier());
@@ -91,9 +96,6 @@ public class Server implements Runnable {
 
                     try {
                         InetAddress address = InetAddress.getByName(common.Setting.FRONTEND_IP);
-                        if (faulty) {
-                            address = InetAddress.getByName(common.Setting.FRONTEND_IP + 1); // For testing crash
-                        }
                         DatagramPacket dataGramPacket = new DatagramPacket(buff, buff.length, address, common.Setting.FRONTEND_PORT);
                         DatagramSocket socket = new DatagramSocket();
                         socket.send(dataGramPacket);
@@ -108,7 +110,7 @@ public class Server implements Runnable {
         }
     }
 
-    public void setPackets(ArrayList<Packet> tempPackets){
+    public void setPackets(ArrayList<Packet> tempPackets) {
         tasks.clear();
         tasks.addAll(tempPackets);
         System.out.println("packets have been replaced");

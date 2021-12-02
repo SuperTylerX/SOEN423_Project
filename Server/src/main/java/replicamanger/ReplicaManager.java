@@ -17,6 +17,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ReplicaManager implements Runnable {
 
@@ -29,7 +30,7 @@ public class ReplicaManager implements Runnable {
         this.packetsHistory = new ArrayList<>();
         this.replicaIndex = replicaIndex;
 
-        switch(replicaIndex) {
+        switch (replicaIndex) {
             case 1:
                 myIp = Setting.REPLICA1_IP;
                 myPort = Setting.REPLICA1_PORT;
@@ -59,24 +60,22 @@ public class ReplicaManager implements Runnable {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
 
-                String s = (String) SerializedObjectConverter.toObject(packet.getData());
+//                String s = (String) SerializedObjectConverter.toObject(packet.getData());
+                HashMap<String, Object> req = (HashMap<String, Object>) SerializedObjectConverter.toObject(packet.getData());
+                System.out.println(req);
 
-                String messageHeader = s;
-                if (messageHeader.contains(",")){
-                    messageHeader = messageHeader.substring(0,s.indexOf(','));
-                }
+//                String messageHeader = s;
+//                if (messageHeader.contains(",")) {
+//                    messageHeader = messageHeader.substring(0, s.indexOf(','));
+//                }
 
-                if(messageHeader.equals(ReplicaManagerOperations.REPLACE_PACKETS_AND_REBOOT.name())){
+                if (req.get("Operation") == ReplicaManagerOperations.REPLACE_PACKETS_AND_REBOOT) {
                     System.out.println("RM: REPLACE_PACKETS_AND_REBOOT request received");
-                    String json = s.substring(s.indexOf(",")+1); // remove header
 
-                    Type listType = new TypeToken<ArrayList<Packet>>(){}.getType();
-                    Gson gson = new GsonBuilder().registerTypeAdapterFactory(OperationAdapterFactory.operationAdapterFactory).create();
-
-                    ArrayList<Packet> tempPackets = gson.fromJson(json, listType);
+                    ArrayList<Packet> tempPackets = (ArrayList<Packet>) req.get("Packets");
 
                     //reset replica
-                    switch(replicaIndex) {
+                    switch (replicaIndex) {
                         case 1:
                             ReplicaOne.shutdownAndRestart(tempPackets);
                             break;
@@ -85,7 +84,6 @@ public class ReplicaManager implements Runnable {
                             break;
                         case 3:
                             ReplicaThree.shutdownAndRestart(tempPackets);
-                            //
                             break;
                         case 4:
                             ReplicaFour.shutdownAndRestart(tempPackets);
@@ -106,14 +104,14 @@ public class ReplicaManager implements Runnable {
                     continue;
                 }
 
-                if(messageHeader.equals(ReplicaManagerOperations.SEND_PACKETS_TO.name())){
+                if (req.get("Operation") == ReplicaManagerOperations.SEND_PACKETS_TO) {
                     System.out.println("RM: SEND_PACKETS_TO request received");
-                    String[] parameters = s.split(",");
 
-                    //replace packet in the other replica
-                    String replacePacketsAnswer = replacePackets(parameters[1], Integer.parseInt(parameters[2]), packetsHistory);
+                    // replace packet in the other replica
+                    String replacePacketsAnswer = replacePackets((String) req.get("TargetIp"), (int) req.get("TargetPort"), packetsHistory);
 
-                    //send reply
+
+                    // send reply to FE
                     String replyMessage = "OK";
                     DatagramPacket DatagramPacketReply = new DatagramPacket(replyMessage.getBytes(), replyMessage.length(),
                             packet.getAddress(), packet.getPort());
@@ -125,19 +123,18 @@ public class ReplicaManager implements Runnable {
 
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     private static String replacePackets(String ip, int port, ArrayList<Packet> packets) throws IOException {
-        Gson gson = new GsonBuilder().registerTypeAdapterFactory(
-                OperationAdapterFactory.operationAdapterFactory).create();
-        String json = gson.toJson(packets);
-        String message = ReplicaManagerOperations.REPLACE_PACKETS_AND_REBOOT.name() + "," + json;
 
+        HashMap<String, Object> req = new HashMap<>();
+        req.put("Operation", ReplicaManagerOperations.REPLACE_PACKETS_AND_REBOOT);
+        req.put("Packets", packets);
         DatagramSocket socket;
         InetAddress address = InetAddress.getByName(ip);
-        byte[] buff = SerializedObjectConverter.toByteArray(message);
+        byte[] buff = SerializedObjectConverter.toByteArray(req);
         DatagramPacket packet = new DatagramPacket(buff, buff.length, address, port);
 
         socket = new DatagramSocket();

@@ -2,6 +2,7 @@ package frontend;
 
 import common.Setting;
 import packet.Packet;
+import replicamanger.ReplicaManagerOperations;
 import utils.SerializedObjectConverter;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -69,7 +71,12 @@ public class SFT_HA {
                         }
                         if (count == 3) {
                             System.out.println("Get inconsistent response from replica " + responses.get(i));
-                            // TODO: notify manager here
+                            // notify manager here
+                            try {
+                                reboot(responses.get(i).get("ReplicaName"));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             // 1 inconsistent response
                             return responses.get((i + 1) % 4).get("Result");
                         }
@@ -94,7 +101,12 @@ public class SFT_HA {
                     }
 
                     System.out.println("Crashed replica is " + finding_bad_replica.get(0));
-                    // TODO: send this to ReplicaManager
+                    // send this to ReplicaManager
+                    try {
+                        reboot(finding_bad_replica.get(0));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     // one crashed replica + 3 GOOD RESPONSES
 
 
@@ -122,7 +134,12 @@ public class SFT_HA {
                             }
                             if (count == 2) {
                                 System.out.println("Get inconsistent response from replica " + responses.get(i));
-                                // TODO: notify manager here
+                                // notify manager here
+                                try {
+                                    reboot(responses.get(i).get("ReplicaName"));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 // 1 inconsistent response and 1 crashed replica + 2 GOOD RESPONSES
                                 return responses.get((i + 1) % 3).get("Result");
                             }
@@ -138,5 +155,47 @@ public class SFT_HA {
 
             }
         }
+    }
+
+    private static String reboot(String replicaIndex) throws Exception {
+        switch (replicaIndex) {
+            case "R1":
+                return sendPacketsTo(Setting.REPLICA2_IP, Setting.REPLICA2_PORT, Setting.REPLICA1_IP, Setting.REPLICA1_PORT);
+            case "R2":
+                return sendPacketsTo(Setting.REPLICA3_IP, Setting.REPLICA3_PORT, Setting.REPLICA2_IP, Setting.REPLICA2_PORT);
+            case "R3":
+                return sendPacketsTo(Setting.REPLICA4_IP, Setting.REPLICA4_PORT, Setting.REPLICA3_IP, Setting.REPLICA3_PORT);
+            case "R4":
+                return sendPacketsTo(Setting.REPLICA1_IP, Setting.REPLICA1_PORT, Setting.REPLICA4_IP, Setting.REPLICA4_PORT);
+            default:
+                throw new Exception("Replica index out of range");
+        }
+    }
+
+    private static String sendPacketsTo(String ip, int port, String targetIp, int targetPort) throws IOException {
+        //ask another RM to send packets to another RM
+        DatagramSocket socket;
+        InetAddress address = InetAddress.getByName(ip);
+
+        HashMap<String, Object> req = new HashMap<>();
+        req.put("Operation", ReplicaManagerOperations.SEND_PACKETS_TO);
+        req.put("TargetIp", targetIp);
+        req.put("TargetPort", targetPort);
+
+        System.out.println(req);
+//        String message = ReplicaManagerOperations.SEND_PACKETS_TO.name() + "," + targetIp + "," + targetPort;
+        byte[] buff = SerializedObjectConverter.toByteArray(req);
+        DatagramPacket packet = new DatagramPacket(buff, buff.length, address, port);
+
+        socket = new DatagramSocket();
+        socket.send(packet);
+
+        byte[] data = new byte[1024];
+        DatagramPacket reply = new DatagramPacket(data, data.length);
+        socket.receive(reply);
+
+        String replyMessage = new String(reply.getData(), 0, reply.getLength());
+        socket.close();
+        return replyMessage;
     }
 }
