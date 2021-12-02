@@ -71,12 +71,21 @@ public class SFT_HA {
                         }
                         if (count == 3) {
                             System.out.println("Get inconsistent response from replica " + responses.get(i));
-                            // notify manager here
-                            try {
-                                reboot(responses.get(i).get("ReplicaName"));
-                            } catch (Exception e) {
-                                e.printStackTrace();
+
+                            // increment and check. and notify manager if count = 3
+
+                            int current_error_count = ResponseWaitingList.error_count.get(responses.get(i).get("ReplicaName"));
+                            ResponseWaitingList.error_count.put(responses.get(i).get("ReplicaName"), current_error_count + 1);
+
+                            if (ResponseWaitingList.error_count.get(responses.get(i).get("ReplicaName")) == 3) {
+                                try {
+                                    reboot(responses.get(i).get("ReplicaName"));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                ResponseWaitingList.error_count.put(responses.get(i).get("ReplicaName"), 0);
                             }
+
                             // 1 inconsistent response
                             return responses.get((i + 1) % 4).get("Result");
                         }
@@ -134,12 +143,22 @@ public class SFT_HA {
                             }
                             if (count == 2) {
                                 System.out.println("Get inconsistent response from replica " + responses.get(i));
-                                // notify manager here
-                                try {
-                                    reboot(responses.get(i).get("ReplicaName"));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+
+
+                                // increment and check. and notify manager if count = 3
+
+                                int current_error_count = ResponseWaitingList.error_count.get(responses.get(i).get("ReplicaName"));
+                                ResponseWaitingList.error_count.put(responses.get(i).get("ReplicaName"), current_error_count + 1);
+
+                                if (ResponseWaitingList.error_count.get(responses.get(i).get("ReplicaName")) == 3) {
+                                    try {
+                                        reboot(responses.get(i).get("ReplicaName"));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    ResponseWaitingList.error_count.put(responses.get(i).get("ReplicaName"), 0);
                                 }
+
                                 // 1 inconsistent response and 1 crashed replica + 2 GOOD RESPONSES
                                 return responses.get((i + 1) % 3).get("Result");
                             }

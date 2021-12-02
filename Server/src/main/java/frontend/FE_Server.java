@@ -7,6 +7,8 @@ import static common.Setting.FRONTEND_PORT;
 public class FE_Server {
     public static void main(String[] args) {
 
+        ResponseWaitingList.initialize_error_count();
+
         Listener listener = new Listener();
         listener.start();
 
